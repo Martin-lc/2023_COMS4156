@@ -1,2 +1,4 @@
 *.json
 node_modules
+doc
+*.db

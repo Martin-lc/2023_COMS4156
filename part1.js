@@ -1,48 +1,73 @@
-// A hypothetical function that extracts keywords based on certain logic.
+const sqlite3 = require('sqlite3').verbose();
+
+// Initialize database.
+let db = new sqlite3.Database('./user_data.db', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+});
+
+db.serialize(() => {
+    db.run("CREATE TABLE IF NOT EXISTS user_data (userId TEXT UNIQUE, userPreference TEXT, queryContent TEXT, keywords TEXT)");
+});
+
+// TODO: Only naive extraction now; add LLM keywords summary
 function extractKeywords(queryContent, userPreference) {
-    // Extract keywords from queryContent and userPreference.
-    // This is a dummy implementation, as real keyword extraction would be much more complex.
-    // TODO: add keywords extraction strategy
-    let keywords = queryContent.split(' ').concat(userPreference.split(' '));
-    return keywords;
+    let keywords = queryContent.split(/[\s,]+/).concat(userPreference.split(/[\s,]+/));
+    keywords = Array.from(new Set(keywords));
+
+    return keywords.join(', ');
 }
 
-// A function that is supposed to send data to the database layer.
-function saveQueryData(userId, userPreference, queryContent, keywords) {
-    // Call to the function that simulates database save
-    storeUserData(userId, userPreference, queryContent, keywords);
+function storeUserData(userId, userPreference, queryContent, keywords, callback) {
+    db.run(`INSERT OR REPLACE INTO user_data (userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?)`,
+        [userId, userPreference, queryContent, keywords],
+        callback
+    );
 }
 
-// A dummy "database" object to demonstrate saving and retrieving user data.
-let database = {};
-
-// A function that simulates storing user data in a database.
-function storeUserData(userId, userPreference, queryContent, keywords) {
-    database[userId] = {
-        userPreference: userPreference,
-        queryContent: queryContent,
-        keywords: keywords
-    };
-    console.log('Data saved:', database);
+function getUserData(userId, callback) {
+    db.get("SELECT * FROM user_data WHERE userId = ?", [userId], callback);
 }
 
-// A function that simulates retrieving user data from a database.
-function getUserData(userId) {
-    return database[userId] || null;
+function handleUserQuery(userId, queryContent, newPreference, callback) {
+    getUserData(userId, (err, user) => {
+        if (err) {
+            return callback(err);
+        }
+
+        let userPreference;
+        let keywords;
+
+        if (user) {
+            userPreference = user.userPreference;
+
+            // Checking for existing content and keywords, avoiding duplication
+            queryContent = user.queryContent.split(/[\s,]+/).concat(queryContent)
+                .filter((value, index, self) => self.indexOf(value) === index)
+                .join(', ');
+                
+            keywords = user.keywords.split(/[\s,]+/).concat(extractKeywords(queryContent, userPreference).split(/[\s,]+/))
+                .filter((value, index, self) => self.indexOf(value) === index)
+                .join(', ');
+
+            console.log("Old user: ", keywords);
+        } else {
+            userPreference = newPreference; // Or however you handle new users
+            keywords = extractKeywords(queryContent, userPreference);
+            console.log("New user: ", keywords);
+        }
+
+        storeUserData(userId, userPreference, queryContent, keywords, err => {
+            callback(err, { userId, userPreference, queryContent, keywords });
+        });
+    });
 }
 
-let userId = "user123";
-let queryContent = "What is the latest news in technology?";
-let userPreference = "technology news";
-
-// Extract keywords.
-let keywords = extractKeywords(queryContent, userPreference);
-
-// Save data.
-saveQueryData(userId, userPreference, queryContent, keywords);
-
-// Retrieve and log saved data.
-let retrievedData = getUserData(userId);
-console.log('Retrieved data:', retrievedData);
-
-
+module.exports = {
+    extractKeywords,
+    storeUserData,
+    getUserData,
+    handleUserQuery,
+    db // expose for closing after tests
+};
