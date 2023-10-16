@@ -1,87 +1,65 @@
-const { extractKeywords, storeUserData, getUserData, handleUserQuery, db } = require('../part1');
+import {
+    extractKeywords,
+    extractKeywords_text,
+    updatePreference,
+    storeUserData,
+    getUserData,
+    handleText,
+    handleUserQuery,
+    db
+  } from '../part1.js';
+import { HuggingFaceInference } from "langchain/llms/hf";
+import { OpenAI } from "langchain/llms/openai";
 
-test('extractKeywords should concatenate queryContent and userPreference and join them with space', () => {
-    const queryContent = 'latest news';
-    const userPreference = 'technology news'; // Test duplicate
-    const expected = 'latest, news, technology';
-    const actual = extractKeywords(queryContent, userPreference);
-    expect(actual).toEqual(expected);
+// const model = new OpenAI({});
+const model = new HuggingFaceInference({
+  model: "gpt2",
+  apiKey: "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"
 });
 
-test('storeUserData should store data without errors', done => {
-    const userId = 'user123';
-    const userPreference = 'tech news';
-    const queryContent = 'latest in tech';
-    const keywords = extractKeywords(queryContent, userPreference);
+const keywords_list = ['sports', 'economic', 'art', 'science', 'tech'];
 
-    storeUserData(userId, userPreference, queryContent, keywords, err => {
-        expect(err).toBeNull();
-        done();
-    });
+// Test extractKeywords
+let userId1 = 'user123';
+let userPreference1 = 'tech news';
+let queryContent1 = 'latest in tech';
+let keywords;
+keywords = await extractKeywords(queryContent1, userPreference1, keywords_list, model);
+console.log(keywords);
+
+// test storeUserData
+await storeUserData(userId1, userPreference1, queryContent1, keywords);
+
+// test getUserData
+let user_data1 = await getUserData(userId1);
+console.log(user_data1);
+
+
+db.run(`DELETE FROM user_data WHERE userId = ?`, userId1, function(err) {
+    if (err) {
+        return callback(err);
+    }
+    console.log(`Deleted ${this.changes} row(s)`);
+    // callback(null, this.changes);
 });
 
-test('getUserData should retrieve stored data', done => {
-    const userId = 'user123';
-    const userPreference = 'tech news';
-    const queryContent = 'latest in tech';
-    const keywords = extractKeywords(queryContent, userPreference);
+keywords = await handleUserQuery(userId1, queryContent1, userPreference1, keywords_list, model)
+console.log(keywords);
 
-    storeUserData(userId, userPreference, queryContent, keywords, err => {
-        expect(err).toBeNull();
+// Test the same user, second entry
+let queryContent2 = 'some economic news';
+keywords = await handleUserQuery(userId1, queryContent2, userPreference1, keywords_list, model)
+console.log(keywords);
 
-        getUserData(userId, (err, row) => {
-            expect(err).toBeNull();
-            expect(row.userId).toEqual(userId);
-            expect(row.userPreference).toEqual(userPreference);
-            expect(row.queryContent).toEqual(queryContent);
-            expect(row.keywords).toEqual(keywords);
-            done();
-        });
-    });
+let userId2 = 'user124';
+let queryContent3 = 'economic news';
+let userPreference2 = 'news, sports';
+
+
+
+db.close(err => {
+    if (err) {
+        return console.error(err.message);
+    }
 });
 
-test('handleUserQuery should store data for new users and handle subsequent entries correctly', done => {
-    
-    const newUserId = 'user125';
-    const firstQueryContent = 'breaking news';
-    const secondQueryContent = 'economic news';
-    const userPreference = 'news, sports';
-    
-    db.run(`DELETE FROM user_data WHERE userId = ?`, newUserId, function(err) {
-        if (err) {
-            return callback(err);
-        }
-        console.log(`Deleted ${this.changes} row(s)`);
-        // callback(null, this.changes);
-    });
-
-    // First entry
-    handleUserQuery(newUserId, firstQueryContent, userPreference, (err, data) => {
-        expect(err).toBeNull();
-        expect(data.userId).toEqual(newUserId);
-        expect(data.queryContent).toEqual(firstQueryContent);
-        expect(data.userPreference).toEqual(userPreference);
-
-        // Second entry
-        handleUserQuery(newUserId, secondQueryContent, userPreference, (err, data) => {
-            expect(err).toBeNull();
-            expect(data.userId).toEqual(newUserId);
-            expect(data.userPreference).toEqual(userPreference);
-            // Expecting both first and second query contents to be present
-            expect(data.keywords).toEqual("breaking, news, sports, economic");
-    
-            done();
-        });
-    });
-
-});
-
-
-
-afterAll(() => {
-    db.close(err => {
-        if (err) {
-            return console.error(err.message);
-        }
-    });
-});

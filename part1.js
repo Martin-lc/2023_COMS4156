@@ -1,7 +1,5 @@
-const sqlite3 = require('sqlite3').verbose();
-
-// Initialize database.
-let db = new sqlite3.Database('./user_data.db', (err) => {
+import sqlite3 from 'sqlite3';
+export const db = new sqlite3.Database('./user_data.db', (err) => {
     if (err) {
         console.error(err.message);
     }
@@ -11,63 +9,90 @@ db.serialize(() => {
     db.run("CREATE TABLE IF NOT EXISTS user_data (userId TEXT UNIQUE, userPreference TEXT, queryContent TEXT, keywords TEXT)");
 });
 
-// TODO: Only naive extraction now; add LLM keywords summary
-function extractKeywords(queryContent, userPreference) {
-    let keywords = queryContent.split(/[\s,]+/).concat(userPreference.split(/[\s,]+/));
-    keywords = Array.from(new Set(keywords));
+export async function extractKeywords(queryContent, userPreference, keywords_list, model) {
+    // Prompt: Given text, select a few keywords from [kw1, kw2, kw3, kw4, ...]
+    const keywordsString = "[" + keywords_list.join(", ") + "]";
 
-    return keywords.join(', ');
+    const formattedPrompt = `
+    Given user preference: ${userPreference}, 
+    and user query: ${queryContent},
+    select one or a few keywords from ${keywordsString}.`;
+
+    console.log(formattedPrompt);
+
+    const res = await model.call(formattedPrompt);
+    const res_new = res.replace(/\n/g, "");
+    return res_new;
 }
 
-function storeUserData(userId, userPreference, queryContent, keywords, callback) {
-    db.run(`INSERT OR REPLACE INTO user_data (userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?)`,
+export async function extractKeywords_text(text, keywords_list, model) {
+    const keywordsString = "[" + keywords_list.join(", ") + "]";
+
+    const formattedPrompt = `
+    Given the text: ${text},
+    select one or a few keywords from ${keywordsString}.`;
+
+    console.log(formattedPrompt);
+      
+    const res = await model.call(formattedPrompt);
+    return res;
+}
+
+export async function storeUserData(userId, userPreference, queryContent, keywords) {
+    return new Promise((resolve, reject) => {
+      db.run(
+        `INSERT OR REPLACE INTO user_data (userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?)`,
         [userId, userPreference, queryContent, keywords],
-        callback
-    );
-}
-
-function getUserData(userId, callback) {
-    db.get("SELECT * FROM user_data WHERE userId = ?", [userId], callback);
-}
-
-function handleUserQuery(userId, queryContent, newPreference, callback) {
-    getUserData(userId, (err, user) => {
-        if (err) {
-            return callback(err);
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
         }
-
-        let userPreference;
-        let keywords;
-
-        if (user) {
-            userPreference = user.userPreference;
-
-            // Checking for existing content and keywords, avoiding duplication
-            queryContent = user.queryContent.split(/[\s,]+/).concat(queryContent)
-                .filter((value, index, self) => self.indexOf(value) === index)
-                .join(', ');
-                
-            keywords = user.keywords.split(/[\s,]+/).concat(extractKeywords(queryContent, userPreference).split(/[\s,]+/))
-                .filter((value, index, self) => self.indexOf(value) === index)
-                .join(', ');
-
-            console.log("Old user: ", keywords);
-        } else {
-            userPreference = newPreference; // Or however you handle new users
-            keywords = extractKeywords(queryContent, userPreference);
-            console.log("New user: ", keywords);
-        }
-
-        storeUserData(userId, userPreference, queryContent, keywords, err => {
-            callback(err, { userId, userPreference, queryContent, keywords });
-        });
+      );
     });
+  }
+
+export async function getUserData(userId) {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT * FROM user_data WHERE userId = ?", [userId], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
 }
 
-module.exports = {
-    extractKeywords,
-    storeUserData,
-    getUserData,
-    handleUserQuery,
-    db // expose for closing after tests
-};
+
+export function updatePreference(){
+    // TODO
+}
+
+export function handleText(){
+    // TODO
+}
+
+
+export async function handleUserQuery(userId, queryContent, newPreference, keywords_list, model) {
+    const user = await getUserData(userId)
+
+    let userPreference;
+    let keywords;
+
+    if (user) {
+        userPreference = user.userPreference;
+        keywords = await extractKeywords(queryContent, userPreference, keywords_list, model)
+        // console.log("Old user: ", keywords);
+    } else {
+        userPreference = newPreference; // Or however you handle new users
+        keywords = await extractKeywords(queryContent, userPreference, keywords_list, model)
+        // console.log("New user: ", keywords);
+    }
+
+    await storeUserData(userId, userPreference, queryContent, keywords);
+
+    return keywords;
+}
