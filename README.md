@@ -10,7 +10,7 @@ This branch works on the third-party source content API (such as PubMed for Iter
 * `keywords` should be chained together using '+' operator, e.g:`"wellness+covid+elder"`
 * `max_records` is recommended to be kept at around 5~50, it will return less number of records if there exists less contents to be matched
 
-  ```json
+  ```javascript
   // example
   getContentByKeywords("dementia+elder", 20).then(res => console.log(res));
   ```
