@@ -18,6 +18,9 @@ const llm = new OpenAI({
  * @returns {Promise<string>} The model's response.
  */
 async function atomChat(text) {
+    if (!text) {
+        throw new Error("Input text cannot be empty.");
+    }
     const res = await llm.call(text);
     return res;
 }
@@ -28,6 +31,9 @@ async function atomChat(text) {
  * @returns {Promise<string>} The summarized version of the input text.
  */
 async function summarizeText(text) {
+    if (!text) {
+        throw new Error("Input text cannot be empty.");
+    }
     const humanTemplate = "{input}";
     const template = `
         You are an expert in summarizing scientific content.
@@ -56,6 +62,10 @@ async function summarizeText(text) {
  * the ID, source (always 'pubmed'), and summarized content of each article.
  */
 async function summarizePubmedOutput(queryWords, numRecords) {
+    if (!queryWords || numRecords <= 0) {
+        throw new Error("Invalid input parameters.");
+    }
+
     const pubmedData = await pubmed.getContentByKeywords(queryWords, numRecords);
     const IdList = await pubmed.getIDByKeywords(queryWords, numRecords);
 
@@ -63,7 +73,6 @@ async function summarizePubmedOutput(queryWords, numRecords) {
 
     for(let i = 0; i < pubmedData.length; i++) {
         let concatenatedText = pubmedData[i].join(" ");
-
         let summary = await summarizeText(concatenatedText);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
 
@@ -73,7 +82,6 @@ async function summarizePubmedOutput(queryWords, numRecords) {
             content: summary_trimmed
         });
     }
-
     return summarizedResults;
 }
 
@@ -86,6 +94,9 @@ async function summarizePubmedOutput(queryWords, numRecords) {
  * the title, source (always 'wikipedia'), and summarized content of each article.
  */
 async function summarizeWikipediaOutput(queryWords, numRecords) {
+    if (!queryWords || numRecords <= 0) {
+        throw new Error("Invalid input parameters.");
+    }
     const wikipediaData = await wikipedia.fetchWikipediaData(queryWords, numRecords);
 
     let summarizedResults = [];
@@ -100,7 +111,6 @@ async function summarizeWikipediaOutput(queryWords, numRecords) {
             content: summary_trimmed
         });
     }
-
     return summarizedResults;
 }
 
