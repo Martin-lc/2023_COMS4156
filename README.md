@@ -1,16 +1,81 @@
-# Source Content API Integration Platform - Chen
+# LLM-Based API-Retrieved Content Summarization 
 
-This branch works on the third-party source content API (such as PubMed for Iteration-1) integration platform.
+`llm.js` is a module designed to interface with the OpenAI model and fetch, process, and summarize content from both PubMed and Wikipedia based on given keywords.
 
-### Instructions
+## Dependencies
 
-**Provide keywords to retrieve an array of PubMed contents**
+- `langchain/llms/openai`: For interfacing with OpenAI.
+- `langchain/prompts`: To create chat prompts for OpenAI.
+- `xmldom`: For parsing XML data.
+- `pubmed.js`: Custom module to fetch content from PubMed.
+- `wikipedia.js`: Custom module to fetch content from Wikipedia.
 
-* call function `getContentByKeywords()`, it takes two arguments: `keywords` and `max_records`
-* `keywords` should be chained together using '+' operator, e.g:`"wellness+covid+elder"`
-* `max_records` is recommended to be kept at around 5~50, it will return less number of records if there exists less contents to be matched
+Ensure that all the dependencies are installed in your project.
 
-  ```javascript
-  // example
-  getContentByKeywords("dementia+elder", 20).then(res => console.log(res));
-  ```
+## Functions
+
+### `atomChat(text)`
+
+#### Description:
+Sends a text prompt to the OpenAI model and returns the response.
+
+#### Parameters:
+- `text` (String): The text to be sent as a prompt to the OpenAI model.
+
+#### Returns:
+A Promise resolving to a string, which is the model's response.
+
+#### Example:
+```javascript
+atomChat("Tell me a joke").then(response => console.log(response));
+```
+---
+
+### `summarizeText(text)`
+#### Description:
+Summarizes the provided text using the OpenAI model.
+
+#### Parameters:
+- `text` (String): The text to be summarized.
+  
+#### Returns:
+A Promise resolving to a string, which is the summarized version of the input text.
+
+#### Example:
+```javascript
+summarizeText("Long text to be summarized...").then(summary => console.log(summary));
+```
+---
+
+### `summarizePubmedOutput(queryWords, numRecords)`
+#### Description:
+Retrieves articles from PubMed based on the given query words and summarizes their content using the OpenAI model.
+
+#### Parameters:
+- `queryWords` (String): The keywords to search for in PubMed.
+- `numRecords` (Number): The number of records to retrieve from PubMed.
+  
+#### Returns:
+A Promise resolving to an array of objects. Each object contains the ID, source (always 'pubmed'), and summarized content of each article.
+
+#### Example:
+```javascript
+summarizePubmedOutput("dementia+elder", 2).then(summarizedResults => console.log(summarizedResults));
+```
+---
+
+### `summarizeWikipediaOutput(keywords, numRecords)`
+#### Description:
+Retrieves articles from Wikipedia based on the given keywords and then summarizes their content using the OpenAI model.
+
+#### Parameters:
+- `keywords` (String): The keywords to search for in Wikipedia.
+- `numRecords` (Number): The number of records to retrieve from Wikipedia.
+  
+#### Returns:
+A Promise resolving to an array of objects. Each object contains the title, source (always 'wikipedia'), and summarized content of each article.
+
+#### Example:
+```javascript
+summarizeWikipediaOutput("quantum physics", 2).then(summarizedResults => console.log(summarizedResults));
+```
