@@ -1,6 +1,6 @@
 {
-  "type": "module",
-  "devDependencies": {
+    "type": "module",
+    "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.23.0",
     "@babel/preset-env": "^7.23.2",
     "babel": "^6.23.0",
@@ -15,5 +15,14 @@
     "langchain": "^0.0.167",
     "openai": "^4.12.1",
     "sqlite3": "^5.1.6"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testMatch": [
+      "**/test/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[tj]s?(x)"
+    ]
   }
 }

@@ -3,7 +3,6 @@ advanced software engineering course project - FA2023
 
 ## Some Dependencies
 ### Set up Jest
-**I quit using Jest because it's somehow incompatible with langchain huggingface integration.**
 1. set up jest for your project: `npm install --save-dev jest`
 2. install jest vscode extension: Orta.vscode-jest
 3. set up your `package.json`, add 
@@ -35,6 +34,3 @@ npm install -S langchain
 npm install -S openai
 npm install @huggingface/inference@1
 ```
-
-## Test code
-Test files are placed in the `test` folder. Run `bash test.sh` to run all test files.

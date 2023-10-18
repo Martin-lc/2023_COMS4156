@@ -1,22 +1,22 @@
-import sqlite3 from 'sqlite3';
-export const db = new sqlite3.Database('./user_data.db', (err) => {
-    if (err) {
-        console.error(err.message);
-    }
+const sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('./user_data.db', (err) => {
+  if (err) {
+      console.error(err.message);
+  }
 });
 
 db.serialize(() => {
     db.run("CREATE TABLE IF NOT EXISTS user_data (userId TEXT UNIQUE, userPreference TEXT, queryContent TEXT, keywords TEXT)");
 });
 
-export async function extractKeywords(queryContent, userPreference, keywords_list, model) {
+const extractKeywords = async function (queryContent, userPreference, keywords_list, model) {
     // Prompt: Given text, select a few keywords from [kw1, kw2, kw3, kw4, ...]
     const keywordsString = "[" + keywords_list.join(", ") + "]";
 
     const formattedPrompt = `
     Given user preference: ${userPreference}, 
     and user query: ${queryContent},
-    select one or a few keywords from ${keywordsString}.`;
+    select one or a few keywords related to the user preference and user query from ${keywordsString}.`;
 
     console.log(formattedPrompt);
 
@@ -25,7 +25,7 @@ export async function extractKeywords(queryContent, userPreference, keywords_lis
     return res_new;
 }
 
-export async function extractKeywords_text(text, keywords_list, model) {
+const extractKeywords_text = async function (text, keywords_list, model) {
     const keywordsString = "[" + keywords_list.join(", ") + "]";
 
     const formattedPrompt = `
@@ -38,7 +38,7 @@ export async function extractKeywords_text(text, keywords_list, model) {
     return res;
 }
 
-export async function storeUserData(userId, userPreference, queryContent, keywords) {
+const storeUserData = async function (userId, userPreference, queryContent, keywords) {
     return new Promise((resolve, reject) => {
       db.run(
         `INSERT OR REPLACE INTO user_data (userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?)`,
@@ -54,7 +54,7 @@ export async function storeUserData(userId, userPreference, queryContent, keywor
     });
   }
 
-export async function getUserData(userId) {
+const getUserData = async function (userId) {
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM user_data WHERE userId = ?", [userId], (err, row) => {
       if (err) {
@@ -67,16 +67,16 @@ export async function getUserData(userId) {
 }
 
 
-export function updatePreference(){
-    // TODO
-}
+// function updatePreference(){
+//     // TODO
+// }
 
-export function handleText(){
-    // TODO
-}
+// function handleText(){
+//     // TODO
+// }
 
 
-export async function handleUserQuery(userId, queryContent, newPreference, keywords_list, model) {
+const handleUserQuery = async function (userId, queryContent, newPreference, keywords_list, model) {
     const user = await getUserData(userId)
 
     let userPreference;
@@ -96,3 +96,12 @@ export async function handleUserQuery(userId, queryContent, newPreference, keywo
 
     return keywords;
 }
+
+module.exports = {
+  extractKeywords,
+  extractKeywords_text,
+  storeUserData,
+  getUserData,
+  handleUserQuery,
+  db
+};
