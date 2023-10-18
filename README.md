@@ -1,16 +1,7 @@
-# LLM-Based API-Retrieved Content Summarization 
+# COMS 4156 Fall 2023
+# Part 3: LLM-Based API-Retrieved Content Summarization 
 
 `llm.js` is a module designed to interface with the OpenAI model and fetch, process, and summarize content from both PubMed and Wikipedia based on given keywords.
-
-## Dependencies
-
-- `langchain/llms/openai`: For interfacing with OpenAI.
-- `langchain/prompts`: To create chat prompts for OpenAI.
-- `xmldom`: For parsing XML data.
-- `pubmed.js`: Custom module to fetch content from PubMed.
-- `wikipedia.js`: Custom module to fetch content from Wikipedia.
-
-Ensure that all the dependencies are installed in your project.
 
 ## Functions
 
@@ -79,3 +70,14 @@ A Promise resolving to an array of objects. Each object contains the title, sour
 ```javascript
 summarizeWikipediaOutput("quantum physics", 2).then(summarizedResults => console.log(summarizedResults));
 ```
+---
+
+## Dependencies
+
+- `langchain/llms/openai`: For interfacing with OpenAI.
+- `langchain/prompts`: To create chat prompts for OpenAI.
+- `xmldom`: For parsing XML data.
+- `pubmed.js`: Custom module to fetch content from PubMed.
+- `wikipedia.js`: Custom module to fetch content from Wikipedia.
+
+Ensure that all the dependencies are installed in your project.
