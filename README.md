@@ -1,5 +1,5 @@
 # 2023_COMS4156
-advanced software engineering course project - FA2023
+advanced software engineering course project - FA2023 Part1
 
 ## Some Dependencies
 ### Set up Jest
@@ -32,5 +32,7 @@ Install langchain:
 # openai
 npm install -S langchain
 npm install -S openai
-npm install @huggingface/inference@1
 ```
+
+## Doc
+Part 1 is written in `part1.js` containing functions handling user input. Given userid, user preference and user query, `handleUserQuery` will process the input, store user information and extract keywords.

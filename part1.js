@@ -9,6 +9,15 @@ db.serialize(() => {
     db.run("CREATE TABLE IF NOT EXISTS user_data (userId TEXT UNIQUE, userPreference TEXT, queryContent TEXT, keywords TEXT)");
 });
 
+/**
+ * Extract keywords based on user preferences and query content.
+ *
+ * @param {string} queryContent - The user's query content.
+ * @param {string} userPreference - The user's preference.
+ * @param {string[]} keywords_list - List of keywords.
+ * @param {object} model - The language model to use for extraction.
+ * @returns {Promise<string>} - A Promise that resolves to the extracted keywords.
+ */
 const extractKeywords = async function (queryContent, userPreference, keywords_list, model) {
     // Prompt: Given text, select a few keywords from [kw1, kw2, kw3, kw4, ...]
     const keywordsString = "[" + keywords_list.join(", ") + "]";
@@ -25,6 +34,14 @@ const extractKeywords = async function (queryContent, userPreference, keywords_l
     return res_new;
 }
 
+/**
+ * Extract keywords from a given text.
+ *
+ * @param {string} text - The input text.
+ * @param {string[]} keywords_list - List of keywords.
+ * @param {object} model - The language model to use for extraction.
+ * @returns {Promise<string>} - A Promise that resolves to the extracted keywords.
+ */
 const extractKeywords_text = async function (text, keywords_list, model) {
     const keywordsString = "[" + keywords_list.join(", ") + "]";
 
@@ -38,6 +55,15 @@ const extractKeywords_text = async function (text, keywords_list, model) {
     return res;
 }
 
+/**
+ * Store user data in the database.
+ *
+ * @param {string} userId - The user's unique identifier.
+ * @param {string} userPreference - The user's preference.
+ * @param {string} queryContent - The user's query content.
+ * @param {string} keywords - The extracted keywords.
+ * @returns {Promise<void>} - A Promise that resolves when data is stored successfully.
+ */
 const storeUserData = async function (userId, userPreference, queryContent, keywords) {
     return new Promise((resolve, reject) => {
       db.run(
@@ -54,6 +80,12 @@ const storeUserData = async function (userId, userPreference, queryContent, keyw
     });
   }
 
+/**
+ * Get user data from the database.
+ *
+ * @param {string} userId - The user's unique identifier.
+ * @returns {Promise<object>} - A Promise that resolves to the user data retrieved from the database.
+ */
 const getUserData = async function (userId) {
   return new Promise((resolve, reject) => {
     db.get("SELECT * FROM user_data WHERE userId = ?", [userId], (err, row) => {
@@ -75,7 +107,16 @@ const getUserData = async function (userId) {
 //     // TODO
 // }
 
-
+/**
+ * Handle a user query, extracting keywords and updating user data.
+ *
+ * @param {string} userId - The user's unique identifier.
+ * @param {string} queryContent - The user's query content.
+ * @param {string} newPreference - The user's new preference.
+ * @param {string[]} keywords_list - List of keywords.
+ * @param {object} model - The language model to use for extraction.
+ * @returns {Promise<string>} - A Promise that resolves to the extracted keywords.
+ */
 const handleUserQuery = async function (userId, queryContent, newPreference, keywords_list, model) {
     const user = await getUserData(userId)
 
