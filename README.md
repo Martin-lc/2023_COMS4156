@@ -1,11 +1,16 @@
-# 2023_COMS4156
-advanced software engineering course project - FA2023
+# Source Content API Integration Platform - Chen
 
-### Part 3
-This part deploys LLM to summarize and shortlist retrieved contents from the APIs as the input for the ranking algorithm.
+This branch works on the third-party source content API (such as PubMed for Iteration-1) integration platform.
 
-* Input: retrieved $n$ API contents from part 2 
-* Output: formatted relevant $k$ contents from the $n$ retrieved contents
+### Instructions
 
-### External Documentations
-* Langchain: https://www.langchain.com/
+**Provide keywords to retrieve an array of PubMed contents**
+
+* call function `getContentByKeywords()`, it takes two arguments: `keywords` and `max_records`
+* `keywords` should be chained together using '+' operator, e.g:`"wellness+covid+elder"`
+* `max_records` is recommended to be kept at around 5~50, it will return less number of records if there exists less contents to be matched
+
+  ```javascript
+  // example
+  getContentByKeywords("dementia+elder", 20).then(res => console.log(res));
+  ```
