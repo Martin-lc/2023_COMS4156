@@ -60,7 +60,7 @@ summarizePubmedOutput("dementia+elder", 2).then(summarizedResults => console.log
 Retrieves articles from Wikipedia based on the given keywords and then summarizes their content using the OpenAI model.
 
 #### Parameters:
-- `keywords` (String): The keywords to search for in Wikipedia.
+- `queryWords` (String): The keywords to search for in Wikipedia.
 - `numRecords` (Number): The number of records to retrieve from Wikipedia.
   
 #### Returns:

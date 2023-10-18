@@ -80,13 +80,13 @@ async function summarizePubmedOutput(queryWords, numRecords) {
 /**
  * Retrieves articles from Wikipedia based on the given keywords, 
  * then summarizes their content using the OpenAI model.
- * @param {string} keywords - The keywords to search for in Wikipedia.
+ * @param {string} queryWords - The keywords to search for in Wikipedia.
  * @param {number} numRecords - The number of records to retrieve from Wikipedia.
  * @returns {Promise<Array<Object>>} An array of objects where each object contains 
  * the title, source (always 'wikipedia'), and summarized content of each article.
  */
-async function summarizeWikipediaOutput(keywords, numRecords) {
-    const wikipediaData = await wikipedia.fetchWikipediaData(keywords, numRecords);
+async function summarizeWikipediaOutput(queryWords, numRecords) {
+    const wikipediaData = await wikipedia.fetchWikipediaData(queryWords, numRecords);
 
     let summarizedResults = [];
 
