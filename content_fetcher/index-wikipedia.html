@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <h1>Test Wikipedia Data Fetch</h1>
+    
+    <label for="keywords">Search Wikipedia:</label>
+    <input type="text" id="keywords" placeholder="Enter keywords...">
+    <input type="number" id="num_records" placeholder="Num of records (e.g., 10)" value="10">
+    <button onclick="searchWikipedia()">Search</button>
+
+    <h2>Results:</h2>
+    <ul id="results">
+        <!-- Results -->
+    </ul>
+
+    <script>
+        async function searchWikipedia() {
+            const keywords = document.getElementById('keywords').value;
+            const num_records = Number(document.getElementById('num_records').value);
+            
+            const results = await fetchWikipediaData(keywords, num_records);
+
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const resultsElement = document.getElementById('results');
+            resultsElement.innerHTML = '';
+
+            results.forEach(result => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<strong>${result.title}</strong>: ${result.content}`;
+                resultsElement.appendChild(listItem);
+            });
+        }
+    </script>
+    <script src="wikipedia.js"></script>
+</body>
+</html>
