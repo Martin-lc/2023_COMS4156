@@ -1,18 +1,16 @@
-
-import { OpenAI } from "langchain/llms/openai";
-
+const OpenAI = require("langchain/llms/openai").OpenAI;
+const PromptTemplate = require("langchain/prompts").PromptTemplate;
 const llm = new OpenAI({
   openAIApiKey: "...",
 });
 
-import { PromptTemplate } from "langchain/prompts";
 
 
 async function generateRelatedWords(preferences) {
     const prompt = PromptTemplate.fromTemplate("I want to ranking the content by the user preferences, \
-  so I will give you the preferences words from a user and you generate 10 related words for each \
-  preference and i will count them in the content to do the count.Only return the generated words \
-  without any other text and comma-separated. Here is the preferences:{preference}");
+  so I will give you 3 preferences words from a user and you generate 10 related words for each \
+  preference word and i will count them in the content to do the count.Return the generated 30 words without the original words\
+  without any other text and comma-separated. Here is the preferences words:{preference}");
   
     const formattedPrompt = await prompt.format({
       preference: preferences,
@@ -24,11 +22,12 @@ async function generateRelatedWords(preferences) {
     // This step assumes a certain structure of the llmResult which might need adjustment.
     // Split the string into an array of words
     const generatedWords = llmResult.split(',').map(word => word.trim());
-
+    console.log("generatedWords", generatedWords);
     return {
       originalWords: preferences.split(',').map(word => word.trim()),
       generatedWords: generatedWords,
     };
+    
   }
 
 function countWordOccurrences(word, content) {
@@ -45,6 +44,8 @@ function scoreContent(generatedWords, content) {
     generatedWords.forEach(word => {
         score += countWordOccurrences(word, content);
     });
+    const firstThreeWords = content.split(' ').slice(0, 3).join(' ');
+    //console.log(firstThreeWords,':', score);
     return score;
 }
 
@@ -60,7 +61,7 @@ function rankContents(contents, generatedWords) {
 }
 
 // Main function to get the highest-scoring content
-async function getTopContent(userId, preferences, contents) {
+async function getTopContent(preferences, contents) {
     const { generatedWords } = await generateRelatedWords(preferences);
     const ranked = rankContents(contents, generatedWords);
     return ranked[0].content;  // Return the highest-scoring content
@@ -87,10 +88,16 @@ async function main() {
         // ... add more dummy content strings for testing
     ];
 
-    const topContent = await getTopContent(userId, preferences, contents);
+    const topContent = await getTopContent(preferences, contents);
     console.log("Top Content:", topContent);
 }
 
 main();
 
-
+module.exports = { 
+    generateRelatedWords, 
+    countWordOccurrences, 
+    scoreContent, 
+    rankContents, 
+    getTopContent 
+};
