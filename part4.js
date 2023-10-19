@@ -38,15 +38,18 @@ function countWordOccurrences(word, content) {
     });
     return count;
 }
-// Function to score a content based on word occurrences
+// Function to score a content based on word occurrences/length
 function scoreContent(generatedWords, content) {
     let score = 0;
     generatedWords.forEach(word => {
         score += countWordOccurrences(word, content);
     });
     const firstThreeWords = content.split(' ').slice(0, 3).join(' ');
-    //console.log(firstThreeWords,':', score);
-    return score;
+    
+    
+    const wordCount = content.split(' ').length; // Count of words
+    console.log(firstThreeWords,':', score/wordCount);
+    return score / wordCount;
 }
 
 // Function to rank contents based on their scores
