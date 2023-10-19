@@ -1,0 +1,5 @@
+package-lock.json
+node_modules
+doc
+*.db
+.DS_Store
