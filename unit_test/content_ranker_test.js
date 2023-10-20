@@ -1,4 +1,4 @@
-const { generateRelatedWords, countWordOccurrences, scoreContent, rankContents, getTopContent } = require('../content_ranker/part4.js');
+const { generateRelatedWords, countWordOccurrences, scoreContent, rankContents, getTopContent } = require('../content_ranker/content_ranker.js');
 // Mocking the llm.predict method to return a fixed value for testing
 jest.mock("langchain/llms/openai", () => {
     return {
