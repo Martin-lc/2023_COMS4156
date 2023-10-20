@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Source Content API Integration Platform - Chen
 
 This branch works on the third-party source content API (such as PubMed for Iteration-1) integration platform.
@@ -14,3 +15,10 @@ This branch works on the third-party source content API (such as PubMed for Iter
   // example
   getContentByKeywords("dementia+elder", 20).then(res => console.log(res));
   ```
+=======
+# 2023_COMS4156
+
+advanced software engineering course project - FA2023
+
+Overall description of the project @dev-chen
+>>>>>>> 334382b00bb8462ac5526304ffd319efd917c9ac
