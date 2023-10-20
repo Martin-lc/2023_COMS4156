@@ -28,12 +28,16 @@ async function atomChat(text) {
 /**
  * Summarizes the provided text using the OpenAI model.
  * @param {string} text - The text to be summarized.
+ * @param {number|null} [maxLength=null] - Optional. The maximum length for the summarized output. If not provided or null, there's no length constraint.
  * @returns {Promise<string>} The summarized version of the input text.
  */
-async function summarizeText(text) {
+async function summarizeText(text, maxLength = null) {
     if (!text) {
         throw new Error("Input text cannot be empty.");
     }
+    
+    const lengthConstraint = maxLength ? ` Please ensure the summary does not exceed ${maxLength} characters.` : "";
+    
     const humanTemplate = "{input}";
     const template = `
         You are an expert in summarizing scientific content.
@@ -41,7 +45,7 @@ async function summarizeText(text) {
         --------
         {input}
         --------
-        Provide a concise summary of the abstract.`;
+        Provide a concise summary of the abstract.${lengthConstraint}`;
     const chatPrompt = ChatPromptTemplate.fromMessages([
         ["system", template],
         ["human", humanTemplate],
@@ -52,6 +56,7 @@ async function summarizeText(text) {
     });
     return res;
 }
+
 
 /**
  * Retrieves articles from PubMed based on the given query words, 

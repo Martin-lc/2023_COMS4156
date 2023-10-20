@@ -1,5 +1,3 @@
-// const fetch = require('node-fetch');
-
 async function fetchWikipediaData(keywords, num_records) {
     const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(keywords)}&format=json&origin=*`;
     const searchResponse = await fetch(searchUrl);
@@ -27,5 +25,3 @@ async function fetchWikipediaData(keywords, num_records) {
 module.exports = { 
     fetchWikipediaData 
 };
-
-// getTop10WikipediaResults('quantum physics').then(results => console.log(results));
