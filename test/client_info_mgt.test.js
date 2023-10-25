@@ -1,7 +1,7 @@
-const {extractKeywords, storeUserData, getUserData, handleUserQuery} = require('../client_info_mgt/client_info_mgt');
+const { extractKeywords, storeUserData, getUserData, handleUserQuery } = require('../client_info_mgt/client_info_mgt');
 const { OpenAI } = require("langchain/llms/openai");
 
-const model = new OpenAI({})
+const model = new OpenAI({ openAIApiKey: process.env.OPENAI_API_KEY })
 
 describe('Test client_info_mgt.js functions', () => {
 
@@ -18,7 +18,7 @@ describe('Test client_info_mgt.js functions', () => {
     );
 
     console.log(keywords);
-  });
+  }, 10000); // 10 seconds timeout
 
   test('Test storeUserData and getUserData functions', async () => {
     const userId = 'user123';

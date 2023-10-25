@@ -1,4 +1,5 @@
 'use strict';
+const { DOMParser } = require('xmldom');
 
 /**
  * Use Esearch to retrieve PubMed Article IDs (PMID) based on a list of keywords.
@@ -30,7 +31,8 @@ const getIDByKeywords = function (keywords, max_records) {
         .then((xmlStr) => {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-            const IdNodes = xmlDoc.getElementsByTagName("IdList")[0].querySelectorAll('Id');
+            // const IdNodes = xmlDoc.getElementsByTagName("IdList")[0].querySelectorAll('Id');
+            const IdNodes = xmlDoc.getElementsByTagName("Id")
             const IdArray = [];
 
             //iteratively retrieve the article IDs based on tagName 'Id' in 'IdList'
@@ -70,15 +72,17 @@ const getAbstractByID = function (PMID) {
         .then((xmlStr) => {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-            const abstractNodes = xmlDoc.querySelectorAll("AbstractText");
             const abstractArray = [];
 
-            // Iteratively retrieve the abstract paragraphs marked with tagName 'AbstractText'
-            for (let i = 0; i < abstractNodes.length; i++) {
-                abstractArray.push(abstractNodes[i].childNodes[0].nodeValue);
+            const elements = xmlDoc.getElementsByTagName("AbstractText")
+            for (let i = 0; i < elements.length; i++) {
+                const element = elements[i];
+                const textContent = element.textContent || element.innerText;
+                abstractArray.push(textContent);
             }
             return abstractArray;
         });
+
 };
 
 
@@ -96,7 +100,7 @@ const getAbstractByID = function (PMID) {
  *     console.log('Fetched Abstracts:', resArray);
  *   })
  */
-const getContentByKeywords = async function (keywords, max_records) {
+const getContentByKeywords = async function (keywords, max_records = 5) {
     const IdList = await getIDByKeywords(keywords, max_records);
     const resArray = [];
 
@@ -111,6 +115,7 @@ const getContentByKeywords = async function (keywords, max_records) {
         }
     }
     await fetchAbstracts();
+    console.log("Done")
     return resArray;
 };
 

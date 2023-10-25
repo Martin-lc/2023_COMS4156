@@ -3,13 +3,13 @@ const { ChatPromptTemplate } = require("langchain/prompts");
 const { DOMParser } = require('xmldom');
 global.DOMParser = DOMParser;
 
-const pubmed = require('./pubmed');
-const wikipedia = require('./wikipedia');
+const pubmed = require('../content_fetcher/pubmed');
+const wikipedia = require('../content_fetcher/wikipedia');
 
 
 // Initialize the OpenAI model
 const llm = new OpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
+    openAIApiKey: process.env.OPENAI_API_KEY,
 });
 
 /**
@@ -35,9 +35,9 @@ async function summarizeText(text, maxLength = null) {
     if (!text) {
         throw new Error("Input text cannot be empty.");
     }
-    
+
     const lengthConstraint = maxLength ? ` Please ensure the summary does not exceed ${maxLength} characters.` : "";
-    
+
     const humanTemplate = "{input}";
     const template = `
         You are an expert in summarizing scientific content.
@@ -75,8 +75,9 @@ async function summarizePubmedOutput(queryWords, numRecords) {
     const IdList = await pubmed.getIDByKeywords(queryWords, numRecords);
 
     let summarizedResults = [];
+    console.log("summarizing pubmed data...")
 
-    for(let i = 0; i < pubmedData.length; i++) {
+    for (let i = 0; i < pubmedData.length; i++) {
         let concatenatedText = pubmedData[i].join(" ");
         let summary = await summarizeText(concatenatedText);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
@@ -87,6 +88,7 @@ async function summarizePubmedOutput(queryWords, numRecords) {
             content: summary_trimmed
         });
     }
+    console.log("Done")
     return summarizedResults;
 }
 
@@ -105,8 +107,9 @@ async function summarizeWikipediaOutput(queryWords, numRecords) {
     const wikipediaData = await wikipedia.fetchWikipediaData(queryWords, numRecords);
 
     let summarizedResults = [];
+    console.log("summarizing wiki data...")
 
-    for(let entry of wikipediaData) {
+    for (let entry of wikipediaData) {
         let summary = await summarizeText(entry.content);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
 
@@ -116,6 +119,7 @@ async function summarizeWikipediaOutput(queryWords, numRecords) {
             content: summary_trimmed
         });
     }
+    console.log("Done")
     return summarizedResults;
 }
 

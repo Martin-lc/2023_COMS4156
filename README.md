@@ -26,42 +26,38 @@ This module intakes different contents and client information to rank the conten
 
 ### Node.js
 
-1. Ensure you have Node.js installed on your machine.
-2. Navigate to the project directory and install the required dependencies:
+1. Ensure you have Node.js installed on your machine (https://nodejs.org/en/download).
+2. Navigate to the project directory and install the required dependencies for this project by using `npm install` or `sudo npm install` with root privileges
 
-```bash
-npm install
-```
+### Important Dependencies
 
-### Jest
+#### Jest
 
-1. set up jest for your project: `npm install --save-dev jest`
-2. install jest vscode extension: Orta.vscode-jest
-3. set up your `package.json`, add
+Jest is a popular JavaScript testing framework developed by Facebook. It is widely used and we use Jest for testing in this project
 
-   ```json
-   "scripts": {
-     "test": "jest"
-   },
-   "jest": {
-       "testMatch": [
-           "**/unit_test/**/*.test.js"
-       ]
-   }
-   ```
-4. write some unit test codes under `test` folder
-5. `npm test` to run test code
+#### Sqlite3
 
-### Sqlite3
+We usesqlite3 for non-vector storage, like user ID, preference and prompt.
 
-We usesqlite3 for non-vector storage, like user ID, preference and prompt. Use `npm install sqlite3` to set up sqlite3 in j
+#### OpenAI
 
-### Langchain JS
+OpenAI API is a powerful artificial intelligence service provided by OpenAI that allows developers to integrate natural language processing capabilities into their applications. We use OpenAI API for various kinds of sub-tasks in this project.
 
-Install langchain:
+#### Langchain JS
 
-```bash
-# openai
-npm install -S langchain
-npm install -S openai
-```
+LangChain is a framework designed to simplify the creation of applications using large language models. We use Langchain for text generation in this project.
+
+## Test
+
+* type `npm test` in the project root directory to run test code.
+
+## Run (demo)
+
+to run the demo, simply type `npm run demo` in the project root directory. To make it work properly:
+
+1. change the `user_path` to your pwd at project root directory
+2. demo.js take 3 parameters: `query`, `userPreference` (user preference), and `record_num` (record number)
+   1. `query`: the query you want to input
+   2. `userPreference`:u se comma to separate different input strings with no space in between
+   3. `record_num`: limit to 2 or 3 for best demonstration effect and wait time
+3. example run: `npm run demo --  --userPreference wellness,elder,covid,nutrition --record_num 2`, enter query when prompted: `what should I do if I have covid?`

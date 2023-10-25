@@ -3,11 +3,11 @@ const {
     atomChat,
     summarizePubmedOutput,
     summarizeWikipediaOutput
-} = require('./llm');
+} = require('../content_optimizer/llm');
 
 // Mocking the external modules to avoid actual API calls during testing
-jest.mock('./pubmed');
-jest.mock('./wikipedia');
+jest.mock('../content_fetcher/pubmed');
+jest.mock('../content_fetcher/wikipedia');
 
 describe("LLM Module Tests", () => {
 
