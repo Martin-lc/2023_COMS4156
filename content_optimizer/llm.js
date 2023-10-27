@@ -3,10 +3,6 @@ const { ChatPromptTemplate } = require("langchain/prompts");
 const { DOMParser } = require('xmldom');
 global.DOMParser = DOMParser;
 
-const pubmed = require('../content_fetcher/pubmed');
-const wikipedia = require('../content_fetcher/wikipedia');
-
-
 // Initialize the OpenAI model
 const llm = new OpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,
@@ -26,26 +22,28 @@ async function atomChat(text) {
 }
 
 /**
- * Summarizes the provided text using the OpenAI model.
+ * Summarizes and translates the provided text using the OpenAI model.
  * @param {string} text - The text to be summarized.
  * @param {number|null} [maxLength=null] - Optional. The maximum length for the summarized output. If not provided or null, there's no length constraint.
- * @returns {Promise<string>} The summarized version of the input text.
+ * @param {string|null} [targetLanguage=null] - Optional. The ISO language code to translate the content into. If not provided or null, the content remains in the original language.
+ * @returns {Promise<string>} The summarized and possibly translated version of the input text.
  */
-async function summarizeText(text, maxLength = null) {
+async function summarizeText(text, maxLength = null, targetLanguage = null) {
     if (!text) {
         throw new Error("Input text cannot be empty.");
     }
 
     const lengthConstraint = maxLength ? ` Please ensure the summary does not exceed ${maxLength} characters.` : "";
+    const translationInstruction = targetLanguage ? ` Then, translate the summary to ${targetLanguage}.` : "";
 
     const humanTemplate = "{input}";
     const template = `
-        You are an expert in summarizing scientific content.
+        You are an expert in summarizing scientific content and translating text.
         Below you find an abstract from a scientific article:
         --------
         {input}
         --------
-        Provide a concise summary of the abstract.${lengthConstraint}`;
+        Provide a concise summary of the abstract.${lengthConstraint}${translationInstruction}`;
     const chatPrompt = ChatPromptTemplate.fromMessages([
         ["system", template],
         ["human", humanTemplate],
@@ -57,60 +55,50 @@ async function summarizeText(text, maxLength = null) {
     return res;
 }
 
-
 /**
- * Retrieves articles from PubMed based on the given query words, 
- * then summarizes their content using the OpenAI model.
- * @param {string} queryWords - The keywords to search for in PubMed.
- * @param {number} numRecords - The number of records to retrieve from PubMed.
+ * Summarizes articles from PubMed.
+ * @param {Array<Object>} pubmedData - The array of articles fetched from PubMed.
  * @returns {Promise<Array<Object>>} An array of objects where each object contains 
  * the ID, source (always 'pubmed'), and summarized content of each article.
  */
-async function summarizePubmedOutput(queryWords, numRecords) {
-    if (!queryWords || numRecords <= 0) {
-        throw new Error("Invalid input parameters.");
+async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguage = null) {
+    if (!Array.isArray(pubmedData)) {
+        throw new Error("Invalid input. Expected an array of PubMed data.");
     }
 
-    const pubmedData = await pubmed.getContentByKeywords(queryWords, numRecords);
-    const IdList = await pubmed.getIDByKeywords(queryWords, numRecords);
-
     let summarizedResults = [];
-    console.log("summarizing pubmed data...")
+    console.log("summarizing pubmed data...");
 
-    for (let i = 0; i < pubmedData.length; i++) {
-        let concatenatedText = pubmedData[i].join(" ");
-        let summary = await summarizeText(concatenatedText);
+    for (let entry of pubmedData) {
+        let summary = await summarizeText(entry.content, , maxLength, targetLanguage);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
 
         summarizedResults.push({
-            id: IdList[i],
+            id: entry.id,
             source: "pubmed",
             content: summary_trimmed
         });
     }
-    console.log("Done")
+    console.log("Done");
     return summarizedResults;
 }
 
 /**
- * Retrieves articles from Wikipedia based on the given keywords, 
- * then summarizes their content using the OpenAI model.
- * @param {string} queryWords - The keywords to search for in Wikipedia.
- * @param {number} numRecords - The number of records to retrieve from Wikipedia.
+ * Summarizes articles from Wikipedia.
+ * @param {Array<Object>} wikipediaData - The array of articles fetched from Wikipedia.
  * @returns {Promise<Array<Object>>} An array of objects where each object contains 
  * the title, source (always 'wikipedia'), and summarized content of each article.
  */
-async function summarizeWikipediaOutput(queryWords, numRecords) {
-    if (!queryWords || numRecords <= 0) {
-        throw new Error("Invalid input parameters.");
+async function summarizeWikipediaOutput(wikipediaData, maxLength = null, targetLanguage = null) {
+    if (!Array.isArray(wikipediaData)) {
+        throw new Error("Invalid input. Expected an array of Wikipedia data.");
     }
-    const wikipediaData = await wikipedia.fetchWikipediaData(queryWords, numRecords);
 
     let summarizedResults = [];
-    console.log("summarizing wiki data...")
+    console.log("summarizing wiki data...");
 
     for (let entry of wikipediaData) {
-        let summary = await summarizeText(entry.content);
+        let summary = await summarizeText(entry.content, maxLength, targetLanguage);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
 
         summarizedResults.push({
@@ -119,7 +107,7 @@ async function summarizeWikipediaOutput(queryWords, numRecords) {
             content: summary_trimmed
         });
     }
-    console.log("Done")
+    console.log("Done");
     return summarizedResults;
 }
 
