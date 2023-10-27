@@ -32,17 +32,29 @@ describe("LLM Module Tests", () => {
 
     // Test for summarizePubmedOutput
     describe("summarizePubmedOutput", () => {
-        it("should throw an error for invalid inputs", async () => {
-            await expect(summarizePubmedOutput("", 2)).rejects.toThrow("Invalid input parameters.");
-            await expect(summarizePubmedOutput("dementia+elder", 0)).rejects.toThrow("Invalid input parameters.");
+        it("should throw an error for invalid input (not an array)", async () => {
+            await expect(summarizePubmedOutput("invalid input")).rejects.toThrow("Invalid input. Expected an array of PubMed data.");
+        });
+
+        it("should throw an error for invalid input format (missing properties)", async () => {
+            const invalidMockData = [{
+                content: "Missing id property."
+            }];
+            await expect(summarizePubmedOutput(invalidMockData)).rejects.toThrow("Invalid input format. Expected PubMed data with 'id' and 'content' properties.");
         });
     });
 
     // Test for summarizeWikipediaOutput
     describe("summarizeWikipediaOutput", () => {
-        it("should throw an error for invalid inputs", async () => {
-            await expect(summarizeWikipediaOutput("", 2)).rejects.toThrow("Invalid input parameters.");
-            await expect(summarizeWikipediaOutput("quantum physics", 0)).rejects.toThrow("Invalid input parameters.");
+        it("should throw an error for invalid input (not an array)", async () => {
+            await expect(summarizeWikipediaOutput("invalid input")).rejects.toThrow("Invalid input. Expected an array of Wikipedia data.");
+        });
+
+        it("should throw an error for invalid input format (missing properties)", async () => {
+            const invalidMockData = [{
+                title: "Missing content property."
+            }];
+            await expect(summarizeWikipediaOutput(invalidMockData)).rejects.toThrow("Invalid input format. Expected Wikipedia data with 'title' and 'content' properties.");
         });
     });
 });
