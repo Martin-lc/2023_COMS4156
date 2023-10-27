@@ -62,24 +62,22 @@ async function summarizeText(text, maxLength = null, targetLanguage = null) {
  * the ID, source (always 'pubmed'), and summarized content of each article.
  */
 async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguage = null) {
-    if (!Array.isArray(pubmedData)) {
-        throw new Error("Invalid input. Expected an array of PubMed data.");
-    }
 
     let summarizedResults = [];
-    console.log("summarizing pubmed data...");
+    console.log("summarizing pubmed data...")
 
-    for (let entry of pubmedData) {
-        let summary = await summarizeText(entry.content, maxLength, targetLanguage);
+    for (let i = 0; i < pubmedData.length; i++) {
+        let concatenatedText = pubmedData[i].join(" ");
+        let summary = await summarizeText(concatenatedText, maxLength, targetLanguage);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
 
         summarizedResults.push({
-            id: entry.id,
+            id: 0,
             source: "pubmed",
             content: summary_trimmed
         });
     }
-    console.log("Done");
+    console.log("Done")
     return summarizedResults;
 }
 

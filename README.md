@@ -51,7 +51,7 @@ LangChain is a framework designed to simplify the creation of applications using
 
 * type `npm test` in the project root directory to run test code.
 
-## Run (demo)
+## Run tasks via terminal (demo)
 
 to run the demo, simply type `npm run demo` in the project root directory. To make it work properly:
 
@@ -62,7 +62,7 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
    3. `record_num`: limit to 2 or 3 for best demonstration effect and wait time
 3. example run: `npm run demo --  --userPreference wellness,elder,covid,nutrition --record_num 2`, enter query when prompted: `what should I do if I have covid?`
 
-## Running the Server and Testing via Postman
+## Running the Server and Testing via Postman (demo)
 
 ### Starting the Server:
 
@@ -80,4 +80,5 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
      "record_num": 2
    }
 
+   ```
 3. Hit Send. Make sure your server is running when testing with Postman.
