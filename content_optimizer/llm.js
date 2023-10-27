@@ -70,7 +70,7 @@ async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguag
     console.log("summarizing pubmed data...");
 
     for (let entry of pubmedData) {
-        let summary = await summarizeText(entry.content, , maxLength, targetLanguage);
+        let summary = await summarizeText(entry.content, maxLength, targetLanguage);
         summary_trimmed = summary.replace(/\n+/g, ' ').trim();
 
         summarizedResults.push({
