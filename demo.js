@@ -1,6 +1,6 @@
 'use strict';
 
-const user_path = '/Users/martin/Desktop/projects/2023_COMS4156'
+const user_path = '/Users/wuyu/Desktop/4156/2023_COMS4156'
 const argv = require('yargs').argv;
 const readlineSync = require('readline-sync');
 const { OpenAI } = require("langchain/llms/openai");

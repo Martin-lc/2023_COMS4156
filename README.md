@@ -61,3 +61,23 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
    2. `userPreference`:u se comma to separate different input strings with no space in between
    3. `record_num`: limit to 2 or 3 for best demonstration effect and wait time
 3. example run: `npm run demo --  --userPreference wellness,elder,covid,nutrition --record_num 2`, enter query when prompted: `what should I do if I have covid?`
+
+## Running the Server and Testing via Postman
+
+### Starting the Server:
+
+1. Set your OpenAI API key: `export OPENAI_API_KEY=your_openai_api_key`.
+2. Start the server with: `node server.js`.
+
+### Testing with Postman:
+
+1. Open Postman and create a new POST request to `http://localhost:3000/demo`.
+2. Set the body to `raw` and `JSON (application/json)`, and input:
+   ```json
+   {
+     "query": "I want to learn about long COVID symptoms",
+     "userPreference": "wellness,elder,covid,nutrition",
+     "record_num": 2
+   }
+
+3. Hit Send. Make sure your server is running when testing with Postman.
