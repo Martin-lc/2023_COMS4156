@@ -26,7 +26,7 @@ This module intakes different contents and client information to rank the conten
 
 ### Node.js
 
-1. Ensure you have Node.js installed on your machine (https://nodejs.org/en/download).
+1. Ensure you have Node.js installed on your machine (https://nodejs.org/en/download). This project uses **v18.18.2.**
 2. Navigate to the project directory and install the required dependencies for this project by using `npm install` or `sudo npm install` with root privileges
 
 ### Important Dependencies
