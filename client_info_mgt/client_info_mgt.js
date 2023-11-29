@@ -5,8 +5,11 @@ let db = new sqlite3.Database('./user_data.db', (err) => {
   }
 });
 
+// Introduce a new client ID to differentiate between multiple instances of a client
 db.serialize(() => {
-  db.run("CREATE TABLE IF NOT EXISTS user_data (userId TEXT UNIQUE, userPreference TEXT, queryContent TEXT, keywords TEXT)");
+  db.run(
+    "CREATE TABLE IF NOT EXISTS user_data (clientId TEXT UNIQUE, userId TEXT, userPreference TEXT, queryContent TEXT, keywords TEXT)"
+  );
 });
 
 /**
@@ -25,7 +28,9 @@ const extractKeywords = async function (queryContent, userPreference, keywords_l
   const formattedPrompt = `
     Given user preference: ${userPreference}, 
     and user query: ${queryContent},
-    select one or a few keywords related to the user preference and user query from ${keywordsString}.`;
+    select one or a few keywords related to the user preference and user query from ${keywordsString}.
+    return with comma as separator.
+    return all in lowercase`;
 
   console.log(formattedPrompt);
 
@@ -49,7 +54,7 @@ const extractKeywords_text = async function (text, keywords_list, model) {
   const formattedPrompt = `
     Given the text: ${text},
     select one or a few keywords from ${keywordsString},
-    return with comma as separator`;
+    return with comma as separator.`;
 
   // console.log(formattedPrompt);
 
@@ -60,18 +65,18 @@ const extractKeywords_text = async function (text, keywords_list, model) {
 
 /**
  * Store user data in the database.
- *
+ * 
+ * @param {string} clientId - The client's unique identifier.
  * @param {string} userId - The user's unique identifier.
  * @param {string} userPreference - The user's preference.
  * @param {string} queryContent - The user's query content.
  * @param {string} keywords - The extracted keywords.
  * @returns {Promise<void>} - A Promise that resolves when data is stored successfully.
  */
-const storeUserData = async function (userId, userPreference, queryContent, keywords) {
+const storeUserData = async function (clientId, userId, userPreference, queryContent, keywords) {
   return new Promise((resolve, reject) => {
-    db.run(
-      `INSERT OR REPLACE INTO user_data (userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?)`,
-      [userId, userPreference, queryContent, keywords],
+    db.run("INSERT OR REPLACE INTO user_data (clientId, userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?, ?)",
+      [clientId, userId, userPreference, queryContent, keywords],
       function (err) {
         if (err) {
           reject(err);
@@ -86,12 +91,12 @@ const storeUserData = async function (userId, userPreference, queryContent, keyw
 /**
  * Get user data from the database.
  *
- * @param {string} userId - The user's unique identifier.
+ * @param {string} clientId - The user's unique identifier.
  * @returns {Promise<object>} - A Promise that resolves to the user data retrieved from the database.
  */
-const getUserData = async function (userId) {
+const getUserData = async function (clientId) {
   return new Promise((resolve, reject) => {
-    db.get("SELECT * FROM user_data WHERE userId = ?", [userId], (err, row) => {
+    db.get("SELECT * FROM user_data WHERE clientId = ?", [clientId], (err, row) => {
       if (err) {
         reject(err);
       } else {
@@ -100,15 +105,6 @@ const getUserData = async function (userId) {
     });
   });
 }
-
-
-// function updatePreference(){
-//     // TODO
-// }
-
-// function handleText(){
-//     // TODO
-// }
 
 /**
  * Handle a user query, extracting keywords and updating user data.
@@ -120,26 +116,30 @@ const getUserData = async function (userId) {
  * @param {object} model - The language model to use for extraction.
  * @returns {Promise<string>} - A Promise that resolves to the extracted keywords.
  */
-const handleUserQuery = async function (userId, queryContent, newPreference, keywords_list, model) {
-  const user = await getUserData(userId)
+const handleUserQuery = async function (clientId, userId, queryContent, newPreference, keywords_list, model) {
+  const clientData = await getUserData(clientId);
 
   let userPreference;
   let keywords;
 
-  if (user) {
-    userPreference = user.userPreference;
-    keywords = await extractKeywords(queryContent, userPreference, keywords_list, model)
-    // console.log("Old user: ", keywords);
+  if (clientData) {
+    if (userPreference != clientData.userPreference) {
+      userPreference = newPreference;
+    } else {
+      userPreference = clientData.userPreference;
+    }
+    
+    keywords = await extractKeywords(queryContent, userPreference, keywords_list, model);
   } else {
-    userPreference = newPreference; // Or however you handle new users
-    keywords = await extractKeywords(queryContent, userPreference, keywords_list, model)
-    // console.log("New user: ", keywords);
+    userPreference = newPreference;
+    keywords = await extractKeywords(queryContent, userPreference, keywords_list, model);
   }
 
-  await storeUserData(userId, userPreference, queryContent, keywords);
+  await storeUserData(clientId, userId, userPreference, queryContent, keywords);
 
   return keywords;
 }
+
 
 module.exports = {
   extractKeywords,
