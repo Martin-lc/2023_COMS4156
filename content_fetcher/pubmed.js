@@ -1,5 +1,5 @@
-'use strict';
-const { DOMParser } = require('xmldom');
+"use strict";
+const { DOMParser } = require("xmldom");
 
 /**
  * Use Esearch to retrieve PubMed Article IDs (PMID) based on a list of keywords.
@@ -17,32 +17,40 @@ const { DOMParser } = require('xmldom');
  *   });
  * @todo <Iteration 2>: Add proximity features to enhance search functionality.
  */
-const getIDByKeywords = function (keywords, max_records) {
-    const base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?";
-    const term = keywords;
-    const retmax = max_records;
-    const database = 'pubmed';
-    const return_format = 'xml';
-    const url = base_url + `term=${term}` + "&" + `retmax=${retmax}` + "&" + `db=${database}` + "&" + `retmode=${return_format}`;
+const getIDByKeywords = function (keywords, max_records = 5) {
+  const base_url =
+    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?";
+  const term = keywords;
+  const retmax = max_records;
+  const database = "pubmed";
+  const return_format = "xml";
+  const url =
+    base_url +
+    `term=${term}` +
+    "&" +
+    `retmax=${retmax}` +
+    "&" +
+    `db=${database}` +
+    "&" +
+    `retmode=${return_format}`;
 
-    // Using the fetch API to make a GET request from PubMed
-    return fetch(url)
-        .then((response) => response.text())
-        .then((xmlStr) => {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-            // const IdNodes = xmlDoc.getElementsByTagName("IdList")[0].querySelectorAll('Id');
-            const IdNodes = xmlDoc.getElementsByTagName("Id")
-            const IdArray = [];
+  // Using the fetch API to make a GET request from PubMed
+  return fetch(url)
+    .then((response) => response.text())
+    .then((xmlStr) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+      // const IdNodes = xmlDoc.getElementsByTagName("IdList")[0].querySelectorAll('Id');
+      const IdNodes = xmlDoc.getElementsByTagName("Id");
+      const IdArray = [];
 
-            //iteratively retrieve the article IDs based on tagName 'Id' in 'IdList'
-            for (let i = 0; i < IdNodes.length; i++) {
-                IdArray.push(IdNodes[i].childNodes[0].nodeValue);
-            }
-            return IdArray;
-        });
+      //iteratively retrieve the article IDs based on tagName 'Id' in 'IdList'
+      for (let i = 0; i < IdNodes.length; i++) {
+        IdArray.push(IdNodes[i].childNodes[0].nodeValue);
+      }
+      return IdArray;
+    });
 };
-
 
 /**
  * Retrieves the abstract of PubMed articles based on their PubMed Article IDs (PMID).
@@ -59,32 +67,38 @@ const getIDByKeywords = function (keywords, max_records) {
  * @todo <Iteration 2>: optimization for better content retrieval.
  */
 const getAbstractByID = function (PMID) {
-    const base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?";
-    const id = PMID;
-    const rettype = 'abstract';
-    const database = 'pubmed';
-    const return_format = 'xml';
-    const url = base_url + `id=${id}` + "&" + `db=${database}` + "&" + `retmode=${return_format}` + "&" + `rettype=${rettype}`;
+  const base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?";
+  const id = PMID;
+  const rettype = "abstract";
+  const database = "pubmed";
+  const return_format = "xml";
+  const url =
+    base_url +
+    `id=${id}` +
+    "&" +
+    `db=${database}` +
+    "&" +
+    `retmode=${return_format}` +
+    "&" +
+    `rettype=${rettype}`;
 
-    // Using the fetch API to make a GET request from PubMed
-    return fetch(url)
-        .then((response) => response.text())
-        .then((xmlStr) => {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-            const abstractArray = [];
+  // Using the fetch API to make a GET request from PubMed
+  return fetch(url)
+    .then((response) => response.text())
+    .then((xmlStr) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+      const abstractArray = [];
 
-            const elements = xmlDoc.getElementsByTagName("AbstractText")
-            for (let i = 0; i < elements.length; i++) {
-                const element = elements[i];
-                const textContent = element.textContent || element.innerText;
-                abstractArray.push(textContent);
-            }
-            return abstractArray;
-        });
-
+      const elements = xmlDoc.getElementsByTagName("AbstractText");
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        const textContent = element.innerText;
+        abstractArray.push(textContent);
+      }
+      return abstractArray;
+    });
 };
-
 
 /**
  * Fetches abstracts of PubMed articles based on specified keywords and maximum number of records.
@@ -101,26 +115,26 @@ const getAbstractByID = function (PMID) {
  *   })
  */
 const getContentByKeywords = async function (keywords, max_records = 5) {
-    const IdList = await getIDByKeywords(keywords, max_records);
-    const resArray = [];
+  const IdList = await getIDByKeywords(keywords, max_records);
+  const resArray = [];
 
-    // fetch abstracts sequentially with a delay
-    async function fetchAbstracts() {
-        for (let i = 0; i < IdList.length; i++) {
-            // Wait for each abstract to be fetched with a delay of 0.45 seconds, 0.45 seconds seem to be the minimum to avoid failures
-            await new Promise(resolve => setTimeout(resolve, 450));
-            console.log("fetching abstracts for PMID: " + IdList[i])
-            const content = await getAbstractByID(IdList[i]);
-            resArray.push(content);
-        }
+  // fetch abstracts sequentially with a delay
+  async function fetchAbstracts() {
+    for (let i = 0; i < IdList.length; i++) {
+      // Wait for each abstract to be fetched with a delay of 0.45 seconds, 0.45 seconds seem to be the minimum to avoid failures
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      console.log("fetching abstracts for PMID: " + IdList[i]);
+      const content = await getAbstractByID(IdList[i]);
+      resArray.push(content);
     }
-    await fetchAbstracts();
-    console.log("Done")
-    return resArray;
+  }
+  await fetchAbstracts();
+  console.log("Done");
+  return resArray;
 };
 
 module.exports = {
-    getIDByKeywords,
-    getAbstractByID,
-    getContentByKeywords
+  getIDByKeywords,
+  getAbstractByID,
+  getContentByKeywords,
 };
