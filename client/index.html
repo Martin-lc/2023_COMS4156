@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Content Recommendation</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-4">Content Recommendation Service</h1>
+        <form id="queryForm" class="mb-3">
+            <div class="form-group">
+                <label for="query">Enter text input:</label>
+                <input type="text" class="form-control" id="query" name="query">
+            </div>
+            <div class="form-group">
+                <label for="userPreference">User Preferences (comma-separated):</label>
+                <input type="text" class="form-control" id="userPreference" name="userPreference">
+            </div>
+            <div class="form-group">
+                <label for="record_num">Record Number:</label>
+                <input type="number" class="form-control" id="record_num" name="record_num" min="1">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div id="loading" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <h2>Results:</h2>
+        <div id="results" class="mb-3"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
