@@ -31,4 +31,4 @@ jobs:
 
       # style checking & static analysis
       - name: Run ESLint
-        run: npx eslint **/*.js
+        run: npx eslint *.js c*/*.js test/*.js # only run files in test folder, client folder, content folder and current directory

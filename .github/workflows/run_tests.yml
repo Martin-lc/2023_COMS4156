@@ -31,6 +31,9 @@ jobs:
 
       # open server
       - run: node server.js
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          
       # open app
       - run: npm run server
 
