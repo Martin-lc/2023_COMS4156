@@ -29,6 +29,11 @@ jobs:
       # pacakge installation
       - run: npm install
 
+      # open server
+      - run: node server.js
+      # open app
+      - run: npm run server
+
       # test running
       - run: npm test
         env:
