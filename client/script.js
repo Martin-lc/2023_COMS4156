@@ -10,16 +10,16 @@ document.getElementById('queryForm').addEventListener('submit', async function (
   const requestData = {
     query: query,
     userPreference: userPreference,
-    record_num: parseInt(record_num)
+    record_num: parseInt(record_num),
   };
 
   try {
     const response = await fetch('http://localhost:3000/demo', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestData)
+      body: JSON.stringify(requestData),
     });
 
     if (response.ok) {
@@ -39,9 +39,9 @@ document.getElementById('queryForm').addEventListener('submit', async function (
 function displayResults(data) {
   const resultsElement = document.getElementById('results');
   if (data.error) {
-      resultsElement.innerText = `Error: ${data.error}`;
+    resultsElement.innerText = `Error: ${data.error}`;
   } else {
-      resultsElement.innerHTML = `
+    resultsElement.innerHTML = `
           <strong>Keywords:</strong> ${data.keywords}<br>
           <strong>Pubmed Content:</strong> <pre>${formatContent(data.pubmedContent)}</pre><br>
           <strong>Wiki Content:</strong> <pre>${formatContent(data.wikiContent)}</pre><br>
@@ -50,5 +50,5 @@ function displayResults(data) {
 }
 
 function formatContent(contentArray) {
-  return contentArray.map(content => JSON.stringify(content, null, 2)).join('\n');
+  return contentArray.map((content) => JSON.stringify(content, null, 2)).join('\n');
 }
