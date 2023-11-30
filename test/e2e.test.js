@@ -27,6 +27,6 @@ test('submit form and show results', async () => {
     await page.waitForSelector('#results', { visible: true });
 
     const resultsText = await page.$eval('#results', el => el.textContent);
-    expect(resultsText).toContain('Patients with cancer');
+    expect(resultsText).toContain('COVID');
 }, 30000);
 
