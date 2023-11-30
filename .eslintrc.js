@@ -1,30 +1,29 @@
 module.exports = {
-  'env': {
-    'node': true,
-    'browser': true,
-    'commonjs': true,
-    'es2021': true,
-    'jest': true,
-  },
-  'extends': 'eslint:recommended',
-  'overrides': [
-    {
-      'env': {
-        'node': true,
-      },
-      'files': [
-        '.eslintrc.{js,cjs}',
-      ],
-      'parserOptions': {
-        'sourceType': 'script',
-      },
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true,
+        "node": true,
+        'jest': true,
     },
-  ],
-  'parserOptions': {
-    'ecmaVersion': 'latest',
-  },
-  'rules': {
-  },
-  'ignorePatterns': ["**/node_modules/**"]
-
-};
+    "extends": "eslint:recommended",
+    "overrides": [
+        {
+            "env": {
+                "node": true
+            },
+            "files": [
+                ".eslintrc.{js,cjs}"
+            ],
+            "parserOptions": {
+                "sourceType": "script"
+            }
+        }
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+    },
+    'ignorePatterns': ["**/node_modules/**"]
+}

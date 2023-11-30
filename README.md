@@ -91,12 +91,16 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
 2. Start the server with: `node server.js`
 
 ### Starting the Application with http-server
-1. To start the application, navigate to the directory containing your client files and run `http-server`
+
+1. To start the application, navigate to the directory containing your client files and run `npm run server`
 2. This will start a local web server on port 8080. You can access the application by going to http://localhost:8080 in your web browser.
 
 ## Running End-to-End (E2E) Tests
-The application includes end-to-end tests written with Puppeteer and Jest. These tests simulate user interactions with the web application in a headless Chrome browser. To run only the end-to-end tests, use the following Jest command: 
+
+The application includes end-to-end tests written with Puppeteer and Jest. These tests simulate user interactions with the web application in a headless Chrome browser. To run only the end-to-end tests, use the following Jest command:
+
 ```
 npx jest --testRegex '.e2e.test.js$' 
 ```
+
 This command will execute tests in files that match the .e2e.test.js pattern. Make sure the application is running via http-server before executing the tests.
