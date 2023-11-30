@@ -28,7 +28,7 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "demo": "node demo.js"
   },
   "jest": {
