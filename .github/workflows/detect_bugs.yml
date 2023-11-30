@@ -1,0 +1,34 @@
+# This workflow, triggered by push to main branch, will perform style checking and static analysis for all the codes to be uploaded
+
+name: bug finder
+
+on: # modify logic for commit
+  push:
+    branches: ["main"]
+
+jobs:
+  bug-finder:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x] # stick with 18 since project is built at v18.18.2
+        os: [ubuntu-latest]
+
+    steps:
+      # clone and check out the main branch at the last commit
+      - uses: actions/checkout@v4
+
+      # set up node js using the versions provided in the matrix
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      # pacakge installation
+      - run: npm install
+
+      # style checking & static analysis
+      - name: Run ESLint
+        run: npx eslint **/*.js
