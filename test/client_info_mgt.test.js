@@ -55,7 +55,8 @@ describe('Test client_info_mgt.js functions', () => {
       keywords_list,
       model
     );
-
+    
+    expect(keywords).toContain('smartphone');
     console.log(keywords);
   });
 
