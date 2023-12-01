@@ -33,3 +33,9 @@ jobs:
       - run: npm test test/
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Archive Test Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-reports
+          path: reports/CI
