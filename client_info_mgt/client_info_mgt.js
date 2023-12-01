@@ -1,9 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./user_data.db', (err) => {
-  if (err) {
-    console.error(err.message);
-  }
-});
+let db = new sqlite3.Database('./user_data.db');
 
 // Introduce a new client ID to differentiate between multiple instances of a client
 db.serialize(() => {
@@ -47,21 +43,21 @@ const extractKeywords = async function(queryContent, userPreference, keywords_li
  * @param {object} model - The language model to use for extraction.
  * @return {Promise<string>} - A Promise that resolves to the extracted keywords.
  */
-const extractKeywords_text = async function(text, keywords_list, model) {
-  console.log('extracting keywords...');
-  const keywordsString = '[' + keywords_list.join(', ') + ']';
+// const extractKeywords_text = async function (text, keywords_list, model) {
+//   console.log("extracting keywords...");
+//   const keywordsString = "[" + keywords_list.join(", ") + "]";
 
-  const formattedPrompt = `
-    Given the text: ${text},
-    select one or a few keywords from ${keywordsString},
-    return with comma as separator.`;
+//   const formattedPrompt = `
+//     Given the text: ${text},
+//     select one or a few keywords from ${keywordsString},
+//     return with comma as separator.`;
 
-  // console.log(formattedPrompt);
+//   // console.log(formattedPrompt);
 
-  const res = await model.call(formattedPrompt);
-  console.log('Done');
-  return res;
-};
+//   const res = await model.call(formattedPrompt);
+//   console.log("Done")
+//   return res;
+// }
 
 /**
  * Store user data in the database.
@@ -73,17 +69,13 @@ const extractKeywords_text = async function(text, keywords_list, model) {
  * @param {string} keywords - The extracted keywords.
  * @return {Promise<void>} - A Promise that resolves when data is stored successfully.
  */
-const storeUserData = async function(clientId, userId, userPreference, queryContent, keywords) {
-  return new Promise((resolve, reject) => {
-    db.run('INSERT OR REPLACE INTO user_data (clientId, userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?, ?)',
-        [clientId, userId, userPreference, queryContent, keywords],
-        function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        },
+const storeUserData = async function (clientId, userId, userPreference, queryContent, keywords) {
+  return new Promise((resolve) => {
+    db.run("INSERT OR REPLACE INTO user_data (clientId, userId, userPreference, queryContent, keywords) VALUES (?, ?, ?, ?, ?)",
+      [clientId, userId, userPreference, queryContent, keywords],
+      function () {
+        resolve();
+      }
     );
   });
 };
@@ -94,17 +86,14 @@ const storeUserData = async function(clientId, userId, userPreference, queryCont
  * @param {string} clientId - The user's unique identifier.
  * @return {Promise<object>} - A Promise that resolves to the user data retrieved from the database.
  */
-const getUserData = async function(clientId) {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM user_data WHERE clientId = ?', [clientId], (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
+const getUserData = async function (clientId) {
+  return new Promise((resolve) => {
+    db.get("SELECT * FROM user_data WHERE clientId = ?", [clientId], (err, row) => {
+      resolve(row);
     });
   });
 };
+
 
 /**
  * Handle a user query, extracting keywords and updating user data.
@@ -143,7 +132,7 @@ const handleUserQuery = async function(clientId, userId, queryContent, newPrefer
 
 module.exports = {
   extractKeywords,
-  extractKeywords_text,
+  // extractKeywords_text,
   storeUserData,
   getUserData,
   handleUserQuery,
