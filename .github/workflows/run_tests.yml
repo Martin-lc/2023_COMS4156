@@ -1,0 +1,35 @@
+# This workflow, triggered by push or pull request to main, will do a clean installation of node dependencies, cache/restore them, build the source code and run unit tests and integration tests for node v18.
+
+name: unit testing & integration testing CI
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x] # stick with 18 since project is built at v18.18.2
+        os: [ubuntu-latest]
+
+    steps:
+      # clone and check out the main branch at the last commit
+      - uses: actions/checkout@v4
+
+      # set up node js using the versions provided in the matrix
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      # pacakge installation
+      - run: npm install
+
+      # test running
+      - run: npm test test/
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

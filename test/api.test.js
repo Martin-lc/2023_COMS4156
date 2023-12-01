@@ -1,50 +1,49 @@
 const { getIDByKeywords } = require('../content_fetcher/pubmed');
-const { fetchWikipediaData } = require('../content_fetcher/wikipedia');
 const fetchMock = require('jest-fetch-mock');
 
 
 global.fetch = fetchMock;
 
 describe('API Endpoints', () => {
-    beforeEach(() => {
-        fetchMock.resetMocks();
-    });
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
 
-    it('should fetch pubmed article IDs based on keywords', async () => {
-        const keywords = 'health';
-        const maxRecords = 2;
+  it('should fetch pubmed article IDs based on keywords', async () => {
+    const keywords = 'health';
+    const maxRecords = 2;
 
-        // Mock the API response
-        const mockResponse = `
+    // Mock the API response
+    const mockResponse = `
       <IdList>
         <Id>37539573</Id>
         <Id>37525234</Id>
       </IdList>
     `;
 
-        fetchMock.mockResponseOnce(mockResponse, { status: 200 });
+    fetchMock.mockResponseOnce(mockResponse, { status: 200 });
 
-        // Simulate the function call
-        const result = await getIDByKeywords(keywords, maxRecords);
+    // Simulate the function call
+    const result = await getIDByKeywords(keywords, maxRecords);
 
-        // Assert fetch was called with the correct URL
-        expect(fetchMock).toHaveBeenCalledWith(
-            `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?term=${keywords}&retmax=${maxRecords}&db=pubmed&retmode=xml`
-        );
+    // Assert fetch was called with the correct URL
+    expect(fetchMock).toHaveBeenCalledWith(
+      `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?term=${keywords}&retmax=${maxRecords}&db=pubmed&retmode=xml`,
+    );
 
-        // Assert the function returns the expected result
-        expect(result).toEqual(['37539573', '37525234']);
-    });
+    // Assert the function returns the expected result
+    expect(result).toEqual(['37539573', '37525234']);
+  });
 
-    // iteration 2
-    // it('should handle API error', async () => {
-    //     const keywords = '';
-    //     const maxRecords = -1;
+  // iteration 2
+  // it('should handle API error', async () => {
+  //     const keywords = '';
+  //     const maxRecords = -1;
 
-    //     // Mock a failed API response
-    //     fetchMock.mockResponseOnce('Error', { status: 500 });
-    //     await expect(getIDByKeywords(keywords, maxRecords)).rejects.toThrow('Error');
-    // });
+  //     // Mock a failed API response
+  //     fetchMock.mockResponseOnce('Error', { status: 500 });
+  //     await expect(getIDByKeywords(keywords, maxRecords)).rejects.toThrow('Error');
+  // });
 });
 
 // iteration 2

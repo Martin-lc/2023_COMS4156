@@ -1,11 +1,10 @@
-const { cli } = require('webpack');
+// const {cli} = require('webpack');
 const { extractKeywords, storeUserData, getUserData, handleUserQuery } = require('../client_info_mgt/client_info_mgt');
-const { OpenAI } = require("langchain/llms/openai");
+const { OpenAI } = require('langchain/llms/openai');
 
-const model = new OpenAI({ openAIApiKey: process.env.OPENAI_API_KEY })
+const model = new OpenAI({ openAIApiKey: process.env.OPENAI_API_KEY });
 
 describe('Test client_info_mgt.js functions', () => {
-
   test('Test extractKeywords function', async () => {
     const userPreference = 'tech news';
     const queryContent = 'latest in tech';
@@ -15,7 +14,7 @@ describe('Test client_info_mgt.js functions', () => {
       queryContent,
       userPreference,
       keywords_list,
-      model
+      model,
     );
 
     console.log(keywords);
@@ -33,7 +32,7 @@ describe('Test client_info_mgt.js functions', () => {
 
     // Test getUserData
     const user_data = await getUserData(clientId);
-    
+
     expect(user_data.clientId).toEqual(clientId);
     expect(user_data.userId).toEqual(userId);
     expect(user_data.userPreference).toEqual(userPreference);
@@ -53,7 +52,7 @@ describe('Test client_info_mgt.js functions', () => {
       queryContent,
       newPreference,
       keywords_list,
-      model
+      model,
     );
     
     expect(keywords).toContain('smartphone');
@@ -103,7 +102,7 @@ describe('Test client_info_mgt.js functions', () => {
     // Simulate concurrent requests
     const [result1, result2] = await Promise.all([
       handleUserQuery(clientId1, userId1, queryContent1, newPreference1, keywords_list1, model),
-      handleUserQuery(clientId2, userId2, queryContent2, newPreference2, keywords_list2, model)
+      handleUserQuery(clientId2, userId2, queryContent2, newPreference2, keywords_list2, model),
     ]);
 
     // Assert that the results are specific to each client and user
@@ -111,5 +110,4 @@ describe('Test client_info_mgt.js functions', () => {
     expect(result2).toContain('europe'); // Assuming travel-related keywords are returned for user2
     expect(result1).not.toEqual(result2); // Ensure results are different for different users
   });
-
 });
