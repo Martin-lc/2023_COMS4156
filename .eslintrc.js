@@ -25,5 +25,13 @@ module.exports = {
     },
     "rules": {
     },
+    "globals": {
+        "generateRelatedWords": true,
+        "scoreContent": true,
+        "rankContents": true,
+        "getTopContent": true,
+        "getEmbeddings": true,
+        "combinedScore": true
+    },
     'ignorePatterns': ["**/node_modules/**"]
 }

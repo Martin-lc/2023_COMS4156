@@ -32,12 +32,10 @@ function mockApiFailure() {
 
 describe("Testing functions from content_ranker.js", () => {
     // Mocking OpenAIEmbeddings and OpenAI methods
-    
+
     mockApiSuccess()
     const {
         generateRelatedWords,
-        scoreContent,
-        rankContents,
         getTopContent,
         getEmbeddings,
         combinedScore
@@ -48,43 +46,43 @@ describe("Testing functions from content_ranker.js", () => {
     });
 
 
-  test('countWordOccurrences function', () => {
-    const count = countWordOccurrences('love', 'I love coding and love testing');
-    expect(count).toBe(2);
-  });
+    test('countWordOccurrences function', () => {
+        const count = countWordOccurrences('love', 'I love coding and love testing');
+        expect(count).toBe(2);
+    });
 
-  test('getEmbeddings function', async () => {
-    const embeddings = await getEmbeddings('example text');
-    expect(embeddings).toHaveLength(1536); // Checking if the embeddings array length is 1536
-  });
+    test('getEmbeddings function', async () => {
+        const embeddings = await getEmbeddings('example text');
+        expect(embeddings).toHaveLength(1536); // Checking if the embeddings array length is 1536
+    });
 
-  test('cosineSimilarity function', () => {
-    const vecA = [1, 0, 0];
-    const vecB = [0, 1, 0];
-    const similarity = cosineSimilarity(vecA, vecB);
-    expect(similarity).toBeCloseTo(0);
-  });
+    test('cosineSimilarity function', () => {
+        const vecA = [1, 0, 0];
+        const vecB = [0, 1, 0];
+        const similarity = cosineSimilarity(vecA, vecB);
+        expect(similarity).toBeCloseTo(0);
+    });
 
 
-  test("combinedScore function", async () => {
-      // No need to redefine the mock here since it's already defined at the top
-      const content = "This is a test content.";
-      const preferencesVector = new Array(1536).fill(0.2);
-      const generatedWords = ["test"];
+    test("combinedScore function", async () => {
+        // No need to redefine the mock here since it's already defined at the top
+        const content = "This is a test content.";
+        const preferencesVector = new Array(1536).fill(0.2);
+        const generatedWords = ["test"];
 
-      const score = await combinedScore(content, preferencesVector, generatedWords);
-      expect(score).toBeDefined();
-  });
-  test("getTopContent function", async () => {
-      const preferences = "love, joy";
-      const contents = [
-      "Content with love and happiness",
-      "Content with joy and excitement",
-      "Neutral content without specific preferences"];
-      let topContent = await getTopContent(preferences, contents);
-      expect(topContent).toContain("love");
+        const score = await combinedScore(content, preferencesVector, generatedWords);
+        expect(score).toBeDefined();
+    });
+    test("getTopContent function", async () => {
+        const preferences = "love, joy";
+        const contents = [
+            "Content with love and happiness",
+            "Content with joy and excitement",
+            "Neutral content without specific preferences"];
+        let topContent = await getTopContent(preferences, contents);
+        expect(topContent).toContain("love");
 
-  });
+    });
 });
 
 describe("Tests with simulated API failures", () => {
@@ -105,8 +103,8 @@ describe("Tests with simulated API failures", () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-        
-    
+
+
     //  generateRelatedWords function handling API failure
     test("generateRelatedWords function handles API failure", async () => {
         const result = await generateRelatedWords("love, happiness, joy");
@@ -134,6 +132,6 @@ describe("Tests with simulated API failures", () => {
         expect(ranked).toHaveLength(contents.length);
         expect(ranked[0].content).toContain("joy and love"); // Assuming "love" has the highest occurrence
     });
-    
+
 
 });
