@@ -21,8 +21,9 @@ async function getEmbeddings(text) {
         const response = await embeddings.embedQuery(text);
         return response;
     } catch (error) {
-        console.error('Error fetching embeddings:', error);
-        throw error;
+        console.error('Error fetching embeddings, using fallback:', error);
+        // Fallback: return null
+        return null;
     }
 }
 
@@ -45,6 +46,9 @@ function cosineSimilarity(vecA, vecB) {
  */
 async function combinedScore(content, preferencesVector, generatedWords) {
     try {
+        if (!preferencesVector) {
+            return fallbackScore(generatedWords, content) * 100;
+        }
         const contentVector = await getEmbeddings(content);
         const cosineScore = cosineSimilarity(preferencesVector, contentVector);
         const originalScore = scoreContent(generatedWords, content);
@@ -55,6 +59,13 @@ async function combinedScore(content, preferencesVector, generatedWords) {
     }
 }
 
+function fallbackScore(generatedWords, content) {
+    let score = 0;
+    generatedWords.forEach(word => {
+        score += countWordOccurrences(word, content);
+    });
+    return score;
+}
 /**
  * Generates related words based on given preferences.
  * @param {string} preferences - The preferences words.
@@ -72,8 +83,12 @@ async function generateRelatedWords(preferences) {
             generatedWords: generatedWords,
         };
     } catch (error) {
-        console.error('Error generating related words:', error);
-        throw error;
+        console.error('Error generating related words, using fallback:', error);
+        // Fallback: return original words as generated words
+        return {
+            originalWords: preferences.split(',').map(word => word.trim()),
+            generatedWords: preferences.split(',').map(word => word.trim()),
+        };
     }
 }
 /**
