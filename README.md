@@ -26,7 +26,7 @@ This module intakes different contents and client information to rank the conten
 
 ### Node.js
 
-1. Ensure you have Node.js installed on your machine (https://nodejs.org/en/download).
+1. Ensure you have Node.js installed on your machine (https://nodejs.org/en/download). This project uses **v18.18.2.**
 2. Navigate to the project directory and install the required dependencies for this project by using `npm install` or `sudo npm install` with root privileges
 
 ### Important Dependencies
@@ -66,12 +66,12 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
 
 ### Starting the Server:
 
-1. Set your OpenAI API key: `export OPENAI_API_KEY=your_openai_api_key`.
-2. Start the server with: `node server.js`.
+1. Set your OpenAI API key: `export OPENAI_API_KEY=your_openai_api_key`
+2. Start the server with: `node server.js`
 
 ### Testing with Postman:
 
-1. Open Postman and create a new POST request to `http://localhost:3000/demo`.
+1. Open Postman and create a new POST request to `http://localhost:3000/demo`
 2. Set the body to `raw` and `JSON (application/json)`, and input:
    ```json
    {
@@ -82,3 +82,25 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
 
    ```
 3. Hit Send. Make sure your server is running when testing with Postman.
+
+## Running the Application
+
+### Starting the Server:
+
+1. Set your OpenAI API key: `export OPENAI_API_KEY=your_openai_api_key`
+2. Start the server with: `node server.js`
+
+### Starting the Application with http-server
+
+1. To start the application, navigate to the directory containing your client files and run `npm run server`
+2. This will start a local web server on port 8080. You can access the application by going to http://localhost:8080 in your web browser.
+
+## Running End-to-End (E2E) Tests
+
+The application includes end-to-end tests written with Puppeteer and Jest. These tests simulate user interactions with the web application in a headless Chrome browser. To run only the end-to-end tests, use the following Jest command:
+
+```
+npx jest --testRegex '.e2e.test.js$' 
+```
+
+This command will execute tests in files that match the .e2e.test.js pattern. Make sure the application is running via http-server before executing the tests.

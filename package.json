@@ -4,20 +4,31 @@
     "@babel/plugin-transform-modules-commonjs": "^7.23.0",
     "@babel/preset-env": "^7.23.2",
     "@jest/globals": "^29.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
     "babel": "^6.23.0",
     "babel-jest": "^29.7.0",
+    "eslint": "^8.54.0",
+    "eslint-config-developit": "^1.2.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-standard-with-typescript": "^40.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-n": "^16.3.1",
+    "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.7.0",
     "jest-fetch-mock": "^3.0.3",
+    "puppeteer": "^19.11.1",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.2",
     "webpack": "^5.89.0"
   },
   "dependencies": {
     "@huggingface/hub": "^0.10.0",
     "axios": "^1.6.2",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "faiss-node": "^0.3.0",
+    "http-server": "^14.1.1",
     "langchain": "^0.0.167",
     "mathjs": "^12.1.0",
     "node-fetch": "^2.7.0",
@@ -29,19 +40,21 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "test": "jest",
-    "demo": "node demo.js"
+    "test": "jest --coverage",
+    "demo": "node demo.js",
+    "server": "http-server"
   },
   "jest": {
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
     },
-    "moduleDirectories": [
-      "node_modules",
-      "src"
-    ],
-    "moduleNameMapper": {
-      "^.+\\.(css|less|scss)$": "babel-jest"
-    }
+    "coverageDirectory": "<rootDir>/reports/coverage"
+  },
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ],
+  "moduleNameMapper": {
+    "^.+\\.(css|less|scss)$": "babel-jest"
   }
 }
