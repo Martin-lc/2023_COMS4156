@@ -93,8 +93,13 @@ const getAbstractByID = function (PMID) {
       const elements = xmlDoc.getElementsByTagName('AbstractText');
       for (let i = 0; i < elements.length; i++) {
         const element = elements[i];
-        const textContent = element.innerText;
-        abstractArray.push(textContent);
+        const textContent = element.textContent;
+        if (textContent && textContent.trim()) {
+          abstractArray.push(textContent.trim());
+        } else {
+          console.warn(`No valid abstract found for PMID: ${PMID}`);
+          abstractArray.push('No abstract available.');
+        }
       }
       return abstractArray;
     });
