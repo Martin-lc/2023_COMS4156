@@ -1,7 +1,7 @@
 const { OpenAI } = require('langchain/llms/openai');
 const { ChatPromptTemplate } = require('langchain/prompts');
 const { DOMParser } = require('xmldom');
-const { array } = require('yargs');
+// const { array } = require('yargs');
 global.DOMParser = DOMParser;
 
 // Initialize the OpenAI model

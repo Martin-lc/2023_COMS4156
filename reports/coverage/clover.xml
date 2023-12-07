@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1701975826651" clover="3.2.0">
-  <project timestamp="1701975826651" name="All files">
-    <metrics statements="215" coveredstatements="187" conditionals="36" coveredconditionals="26" methods="43" coveredmethods="43" elements="294" coveredelements="256" complexity="0" loc="215" ncloc="215" packages="4" files="5" classes="5"/>
+<coverage generated="1701977811387" clover="3.2.0">
+  <project timestamp="1701977811387" name="All files">
+    <metrics statements="214" coveredstatements="186" conditionals="36" coveredconditionals="26" methods="43" coveredmethods="43" elements="293" coveredelements="255" complexity="0" loc="214" ncloc="214" packages="4" files="5" classes="5"/>
     <package name="client_info_mgt">
       <metrics statements="38" coveredstatements="35" conditionals="4" coveredconditionals="2" methods="10" coveredmethods="10"/>
       <file name="client_info_mgt.js" path="/Users/martin/Desktop/projects/2023_COMS4156/client_info_mgt/client_info_mgt.js">
@@ -127,13 +127,12 @@
       </file>
     </package>
     <package name="content_optimizer">
-      <metrics statements="43" coveredstatements="20" conditionals="18" coveredconditionals="11" methods="4" coveredmethods="4"/>
+      <metrics statements="42" coveredstatements="19" conditionals="18" coveredconditionals="11" methods="4" coveredmethods="4"/>
       <file name="llm.js" path="/Users/martin/Desktop/projects/2023_COMS4156/content_optimizer/llm.js">
-        <metrics statements="43" coveredstatements="20" conditionals="18" coveredconditionals="11" methods="4" coveredmethods="4"/>
+        <metrics statements="42" coveredstatements="19" conditionals="18" coveredconditionals="11" methods="4" coveredmethods="4"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
         <line num="8" count="1" type="stmt"/>
         <line num="18" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -208,22 +207,22 @@
         <line num="79" count="3" type="stmt"/>
         <line num="80" count="3" type="stmt"/>
         <line num="81" count="3" type="stmt"/>
-        <line num="82" count="57" type="stmt"/>
+        <line num="82" count="65" type="stmt"/>
         <line num="83" count="2" type="stmt"/>
         <line num="84" count="2" type="stmt"/>
-        <line num="85" count="5" type="stmt"/>
+        <line num="85" count="7" type="stmt"/>
         <line num="89" count="1" type="stmt"/>
         <line num="91" count="1" type="stmt"/>
         <line num="92" count="3" type="stmt"/>
         <line num="93" count="3" type="stmt"/>
-        <line num="105" count="97" type="stmt"/>
-        <line num="106" count="97" type="stmt"/>
-        <line num="107" count="97" type="stmt"/>
-        <line num="108" count="484" type="cond" truecount="2" falsecount="0"/>
-        <line num="110" count="97" type="stmt"/>
+        <line num="105" count="121" type="stmt"/>
+        <line num="106" count="121" type="stmt"/>
+        <line num="107" count="121" type="stmt"/>
+        <line num="108" count="604" type="cond" truecount="2" falsecount="0"/>
+        <line num="110" count="121" type="stmt"/>
         <line num="120" count="4" type="stmt"/>
         <line num="121" count="4" type="stmt"/>
-        <line num="122" count="88" type="stmt"/>
+        <line num="122" count="112" type="stmt"/>
         <line num="127" count="4" type="stmt"/>
         <line num="129" count="4" type="stmt"/>
         <line num="140" count="2" type="stmt"/>
@@ -231,7 +230,7 @@
         <line num="142" count="6" type="stmt"/>
         <line num="143" count="6" type="stmt"/>
         <line num="144" count="6" type="stmt"/>
-        <line num="150" count="5" type="stmt"/>
+        <line num="150" count="6" type="stmt"/>
         <line num="159" count="1" type="stmt"/>
         <line num="160" count="1" type="stmt"/>
         <line num="161" count="1" type="stmt"/>

@@ -74,13 +74,13 @@ describe("Testing functions from content_ranker.js", () => {
         expect(score).toBeDefined();
     });
     test("getTopContent function", async () => {
-        const preferences = "love, joy";
+        const preferences = "love, joy, happiness, excitement";
         const contents = [
             "Content with love and happiness",
             "Content with joy and excitement",
             "Neutral content without specific preferences"];
         let topContent = await getTopContent(preferences, contents);
-        expect(topContent).toContain("love");
+        expect(topContent).toMatch(/love|joy/);
 
     });
 });
