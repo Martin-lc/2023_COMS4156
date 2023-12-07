@@ -51,7 +51,17 @@ LangChain is a framework designed to simplify the creation of applications using
 
 * type `npm test` in the project root directory to run test code.
 
-## Run tasks via terminal (demo)
+## Continuous Integration Test
+
+* Github action is used to to implement continuous integration tests for the project. Each time there is a push or merge to the main, CI tests are run.
+  * The workflow files are located at: `https://github.com/Martin-lc/2023_COMS4156/tree/main/.github/workflows`
+* CI tests include a test for unit tests and integration tests as well as tests for `style checking` and `static analysis` using `ESLint`
+
+## Branch Coverage
+
+* We will jest for code coverage analysis -- simply type` npx jest --coverage` to check for branch coverage for the repository
+
+## Run tasks via terminal (demo - 1st Iteration)
 
 to run the demo, simply type `npm run demo` in the project root directory. To make it work properly:
 
@@ -62,7 +72,7 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
    3. `record_num`: limit to 2 or 3 for best demonstration effect and wait time
 3. example run: `npm run demo --  --userPreference wellness,elder,covid,nutrition --record_num 2`, enter query when prompted: `what should I do if I have covid?`
 
-## Running the Server and Testing via Postman (demo)
+## Running the Server and Testing via Postman (demo - 1st Iteration)
 
 ### Starting the Server:
 
@@ -83,7 +93,7 @@ to run the demo, simply type `npm run demo` in the project root directory. To ma
    ```
 3. Hit Send. Make sure your server is running when testing with Postman.
 
-## Running the Application
+## Running the Application (2nd Iteration)
 
 ### Starting the Server:
 

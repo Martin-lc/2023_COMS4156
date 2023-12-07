@@ -1,5 +1,5 @@
 // const {cli} = require('webpack');
-const { extractKeywords, storeUserData, getUserData, handleUserQuery } = require('../client_info_mgt/client_info_mgt');
+const { extractKeywords, extractKeywords_text, storeUserData, getUserData, handleUserQuery } = require('../client_info_mgt/client_info_mgt');
 const { OpenAI } = require('langchain/llms/openai');
 
 const model = new OpenAI({ openAIApiKey: process.env.OPENAI_API_KEY });
@@ -14,6 +14,19 @@ describe('Test client_info_mgt.js functions', () => {
       queryContent,
       userPreference,
       keywords_list,
+      model,
+    );
+
+    console.log(keywords);
+  }, 10000); // 10 seconds timeout
+
+  test('Test extractKeywords_text function', async () => {
+    const userPreference = ['sports', 'economic', 'art', 'tech'];
+    const queryContent = 'latest in tech';
+
+    const keywords = await extractKeywords_text(
+      queryContent,
+      userPreference,
       model,
     );
 
@@ -54,7 +67,7 @@ describe('Test client_info_mgt.js functions', () => {
       keywords_list,
       model,
     );
-    
+
     expect(keywords).toContain('smartphone');
     console.log(keywords);
   });
