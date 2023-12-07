@@ -74,6 +74,9 @@ async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguag
 
 
   for (let i = 0; i < pubmedData.length; i++) {
+    if (pubmedData[i].some(text => typeof text !== 'string' || !text.trim())) {
+      throw new Error(`Invalid text in PubMed data at index ${i}`);
+    }
     const concatenatedText = pubmedData[i].join(' ');
     const summary = await summarizeText(concatenatedText, maxLength, targetLanguage);
     const summary_trimmed = summary.replace(/\n+/g, ' ').trim();
