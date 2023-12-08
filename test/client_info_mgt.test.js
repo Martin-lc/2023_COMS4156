@@ -52,6 +52,26 @@ describe('Test client_info_mgt.js functions', () => {
     expect(user_data.queryContent).toEqual(queryContent);
   });
 
+  test('Test handleUserQuery function, firsttime access', async () => {
+    const clientId = 'clientx';
+    const userId = 'userx';
+    const queryContent = 'latest smartphones';
+    const newPreference = 'tech';
+    const keywords_list = ['smartphone', 'tech', 'innovation'];
+
+    const keywords = await handleUserQuery(
+      clientId,
+      userId,
+      queryContent,
+      newPreference,
+      keywords_list,
+      model,
+    );
+
+    expect(keywords).toContain('smartphone');
+    console.log(keywords);
+  });
+
   test('Test handleUserQuery function with clientID', async () => {
     const clientId = 'client1';
     const userId = 'user1';
@@ -69,6 +89,26 @@ describe('Test client_info_mgt.js functions', () => {
     );
 
     expect(keywords).toContain('smartphone');
+    console.log(keywords);
+  });
+
+  test('Test handleUserQuery function with the same user and user prerference', async () => {
+    const clientId = 'client1';
+    const userId = 'user1';
+    const queryContent = 'innovation';
+    const newPreference = 'tech';
+    const keywords_list = ['smartphone', 'tech', 'innovation'];
+
+    const keywords = await handleUserQuery(
+      clientId,
+      userId,
+      queryContent,
+      newPreference,
+      keywords_list,
+      model,
+    );
+
+    expect(keywords).toContain('innovation');
     console.log(keywords);
   });
 
