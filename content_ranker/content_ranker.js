@@ -1,6 +1,6 @@
 const OpenAI = require('langchain/llms/openai').OpenAI;
 const PromptTemplate = require('langchain/prompts').PromptTemplate;
-const OpenAIEmbeddings=require('langchain/embeddings/openai').OpenAIEmbeddings;
+const OpenAIEmbeddings = require('langchain/embeddings/openai').OpenAIEmbeddings;
 const math = require('mathjs');
 
 /* Create instance for embeddings */
@@ -21,9 +21,11 @@ async function getEmbeddings(text) {
     const response = await embeddings.embedQuery(text);
     return response;
   } catch (error) {
-    console.error('Error fetching embeddings:', error);
-    throw error;
+    console.error('Error fetching embeddings, using fallback:', error);
+    // Fallback: return null
+    return null;
   }
+
 }
 
 /**
@@ -45,6 +47,9 @@ function cosineSimilarity(vecA, vecB) {
  */
 async function combinedScore(content, preferencesVector, generatedWords) {
   try {
+    if (!preferencesVector) {
+      return fallbackScore(generatedWords, content) * 100;
+    }
     const contentVector = await getEmbeddings(content);
     const cosineScore = cosineSimilarity(preferencesVector, contentVector);
     const originalScore = scoreContent(generatedWords, content);
@@ -53,28 +58,42 @@ async function combinedScore(content, preferencesVector, generatedWords) {
     console.error('Error calculating combined score:', error);
     throw error;
   }
+
 }
 
+function fallbackScore(generatedWords, content) {
+  let score = 0;
+  generatedWords.forEach(word => {
+    score += countWordOccurrences(word, content);
+  });
+  return score;
+}
 /**
  * Generates related words based on given preferences.
  * @param {string} preferences - The preferences words.
  * @return {Promise<Object>} A promise that resolves to an object containing original and generated words.
  */
 async function generateRelatedWords(preferences) {
+
   try {
-    const prompt = PromptTemplate.fromTemplate('I want to ranking the content by the user preferences, so I will give you 3 preferences words from a user and you generate 10 related words for each preference word and i will count them in the content to do the count.Return the generated 30 words without the original words without any other text and comma-separated. Here are the preferences words:{preference}');
-    const formattedPrompt = await prompt.format({preference: preferences});
+    const prompt = PromptTemplate.fromTemplate("I want to ranking the content by the user preferences, so I will give you 3 preferences words from a user and you generate 10 related words for each preference word and i will count them in the content to do the count.Return the generated 30 words without the original words without any other text and comma-separated. Here are the preferences words:{preference}");
+    const formattedPrompt = await prompt.format({ preference: preferences });
     const llmResult = await llm.predict(formattedPrompt);
-    const generatedWords = llmResult.split(',').map((word) => word.trim());
-    console.log('generatedWords', generatedWords);
+    const generatedWords = llmResult.split(',').map(word => word.trim());
+    console.log("generatedWords", generatedWords);
     return {
-      originalWords: preferences.split(',').map((word) => word.trim()),
+      originalWords: preferences.split(',').map(word => word.trim()),
       generatedWords: generatedWords,
     };
   } catch (error) {
-    console.error('Error generating related words:', error);
-    throw error;
+    console.error('Error generating related words, using fallback:', error);
+    // Fallback: return original words as generated words
+    return {
+      originalWords: preferences.split(',').map(word => word.trim()),
+      generatedWords: preferences.split(',').map(word => word.trim()),
+    };
   }
+
 }
 /**
  * Counts the number of occurrences of a specific word in a given content.
@@ -138,7 +157,7 @@ async function rankContents(contents, preferencesVector, generatedWords) {
  */
 async function getTopContent(preferences, contents) {
   console.log('Generating related words based on client preferences...');
-  const {generatedWords} = await generateRelatedWords(preferences);
+  const { generatedWords } = await generateRelatedWords(preferences);
   console.log('Vectorizing preferences...');
   const preferencesVector = await getEmbeddings(preferences);
   console.log('Done');

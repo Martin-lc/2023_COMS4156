@@ -1,5 +1,5 @@
 'use strict';
-const {DOMParser} = require('xmldom');
+const { DOMParser } = require('xmldom');
 
 /**
  * Use Esearch to retrieve PubMed Article IDs (PMID) based on a list of keywords.
@@ -17,7 +17,7 @@ const {DOMParser} = require('xmldom');
  *   });
  * @todo <Iteration 2>: Add proximity features to enhance search functionality.
  */
-const getIDByKeywords = function(keywords, max_records = 5) {
+const getIDByKeywords = function (keywords, max_records = 5) {
   const base_url =
     'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?';
   const term = keywords;
@@ -36,20 +36,20 @@ const getIDByKeywords = function(keywords, max_records = 5) {
 
   // Using the fetch API to make a GET request from PubMed
   return fetch(url)
-      .then((response) => response.text())
-      .then((xmlStr) => {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlStr, 'text/xml');
-        // const IdNodes = xmlDoc.getElementsByTagName("IdList")[0].querySelectorAll('Id');
-        const IdNodes = xmlDoc.getElementsByTagName('Id');
-        const IdArray = [];
+    .then((response) => response.text())
+    .then((xmlStr) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlStr, 'text/xml');
+      // const IdNodes = xmlDoc.getElementsByTagName("IdList")[0].querySelectorAll('Id');
+      const IdNodes = xmlDoc.getElementsByTagName('Id');
+      const IdArray = [];
 
-        // iteratively retrieve the article IDs based on tagName 'Id' in 'IdList'
-        for (let i = 0; i < IdNodes.length; i++) {
-          IdArray.push(IdNodes[i].childNodes[0].nodeValue);
-        }
-        return IdArray;
-      });
+      // iteratively retrieve the article IDs based on tagName 'Id' in 'IdList'
+      for (let i = 0; i < IdNodes.length; i++) {
+        IdArray.push(IdNodes[i].childNodes[0].nodeValue);
+      }
+      return IdArray;
+    });
 };
 
 /**
@@ -66,7 +66,7 @@ const getIDByKeywords = function(keywords, max_records = 5) {
  *   });
  * @todo <Iteration 2>: optimization for better content retrieval.
  */
-const getAbstractByID = function(PMID) {
+const getAbstractByID = function (PMID) {
   const base_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?';
   const id = PMID;
   const rettype = 'abstract';
@@ -84,20 +84,25 @@ const getAbstractByID = function(PMID) {
 
   // Using the fetch API to make a GET request from PubMed
   return fetch(url)
-      .then((response) => response.text())
-      .then((xmlStr) => {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlStr, 'text/xml');
-        const abstractArray = [];
+    .then((response) => response.text())
+    .then((xmlStr) => {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlStr, 'text/xml');
+      const abstractArray = [];
 
-        const elements = xmlDoc.getElementsByTagName('AbstractText');
-        for (let i = 0; i < elements.length; i++) {
-          const element = elements[i];
-          const textContent = element.innerText;
-          abstractArray.push(textContent);
+      const elements = xmlDoc.getElementsByTagName('AbstractText');
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        const textContent = element.textContent;
+        if (textContent && textContent.trim()) {
+          abstractArray.push(textContent.trim());
+        } else {
+          console.warn(`No valid abstract found for PMID: ${PMID}`);
+          abstractArray.push('No abstract available.');
         }
-        return abstractArray;
-      });
+      }
+      return abstractArray;
+    });
 };
 
 /**
@@ -114,7 +119,7 @@ const getAbstractByID = function(PMID) {
  *     console.log('Fetched Abstracts:', resArray);
  *   })
  */
-const getContentByKeywords = async function(keywords, max_records = 5) {
+const getContentByKeywords = async function (keywords, max_records = 5) {
   const IdList = await getIDByKeywords(keywords, max_records);
   const resArray = [];
 

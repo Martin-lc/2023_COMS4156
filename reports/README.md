@@ -1,3 +1,7 @@
+# Continuous Integration
+
+the links for CI reports generated automatically from github actions are provided in the `CI/link.txt`.
+
 # Coverage
 
 the coverage folder contains reports for branch coverage tests ouputed by jest, to generate the report, run `npx jest --coverage`.

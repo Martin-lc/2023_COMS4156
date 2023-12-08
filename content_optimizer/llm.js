@@ -1,6 +1,7 @@
 const { OpenAI } = require('langchain/llms/openai');
 const { ChatPromptTemplate } = require('langchain/prompts');
 const { DOMParser } = require('xmldom');
+// const { array } = require('yargs');
 global.DOMParser = DOMParser;
 
 // Initialize the OpenAI model
@@ -65,7 +66,17 @@ async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguag
   const summarizedResults = [];
   console.log('summarizing pubmed data...');
 
+  console.log(pubmedData)
+  if (!Array.isArray(pubmedData)) {
+    // If not an array, throw a custom error
+    throw new Error("Invalid input. Expected an array of PubMed data.");
+  }
+
+
   for (let i = 0; i < pubmedData.length; i++) {
+    if (pubmedData[i].some(text => typeof text !== 'string' || !text.trim())) {
+      throw new Error(`Invalid text in PubMed data at index ${i}`);
+    }
     const concatenatedText = pubmedData[i].join(' ');
     const summary = await summarizeText(concatenatedText, maxLength, targetLanguage);
     const summary_trimmed = summary.replace(/\n+/g, ' ').trim();
@@ -87,8 +98,10 @@ async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguag
  * the title, source (always 'wikipedia'), and summarized content of each article.
  */
 async function summarizeWikipediaOutput(wikipediaData, maxLength = null, targetLanguage = null) {
+
   if (!Array.isArray(wikipediaData)) {
-    throw new Error('Invalid input. Expected an array of Wikipedia data.');
+    // If not an array, throw a custom error
+    throw new Error("Invalid input. Expected an array of Wikipedia data.");
   }
 
   const summarizedResults = [];

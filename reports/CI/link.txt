@@ -1,0 +1,5 @@
+CI for static analysis & bug finder:
+https://github.com/Martin-lc/2023_COMS4156/actions/workflows/detect_bugs.yml
+
+CI for unit tests and integration tests
+https://github.com/Martin-lc/2023_COMS4156/actions/workflows/run_tests.yml

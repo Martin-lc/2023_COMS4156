@@ -1,4 +1,4 @@
-const {fetchWikipediaData} = require('../content_fetcher/wikipedia');
+const { fetchWikipediaData } = require('../content_fetcher/wikipedia');
 
 describe('fetchWikipediaData', () => {
   it('should return exact number of results specified by num_records', async () => {

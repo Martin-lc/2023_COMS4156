@@ -4,7 +4,7 @@ let db = new sqlite3.Database('./user_data.db');
 // Introduce a new client ID to differentiate between multiple instances of a client
 db.serialize(() => {
   db.run(
-      'CREATE TABLE IF NOT EXISTS user_data (clientId TEXT UNIQUE, userId TEXT, userPreference TEXT, queryContent TEXT, keywords TEXT)',
+    'CREATE TABLE IF NOT EXISTS user_data (clientId TEXT UNIQUE, userId TEXT, userPreference TEXT, queryContent TEXT, keywords TEXT)',
   );
 });
 
@@ -17,7 +17,7 @@ db.serialize(() => {
  * @param {object} model - The language model to use for extraction.
  * @return {Promise<string>} - A Promise that resolves to the extracted keywords.
  */
-const extractKeywords = async function(queryContent, userPreference, keywords_list, model) {
+const extractKeywords = async function (queryContent, userPreference, keywords_list, model) {
   // Prompt: Given text, select a few keywords from [kw1, kw2, kw3, kw4, ...]
   const keywordsString = '[' + keywords_list.join(', ') + ']';
 
@@ -39,25 +39,27 @@ const extractKeywords = async function(queryContent, userPreference, keywords_li
  * Extract keywords from a given text.
  *
  * @param {string} text - The input text.
- * @param {string[]} keywords_list - List of keywords.
+ * @param {string[]} userPreference - List of userPreference as keywords.
  * @param {object} model - The language model to use for extraction.
  * @return {Promise<string>} - A Promise that resolves to the extracted keywords.
  */
-// const extractKeywords_text = async function (text, keywords_list, model) {
-//   console.log("extracting keywords...");
-//   const keywordsString = "[" + keywords_list.join(", ") + "]";
+const extractKeywords_text = async function (text, userPreference, model) {
+  console.log("extracting keywords...");
+  const userPreferencesString = "[" + userPreference.join(", ") + "]";
 
-//   const formattedPrompt = `
-//     Given the text: ${text},
-//     select one or a few keywords from ${keywordsString},
-//     return with comma as separator.`;
+  const formattedPrompt = `
+    Given a list of user preferences: ${userPreferencesString}，
+    and user query: ${text},
+    Try your best to select one or a few keywords from the user query.
+    return with comma as separator.
+    return all in lowercase`;
 
-//   // console.log(formattedPrompt);
+  // console.log(formattedPrompt);
 
-//   const res = await model.call(formattedPrompt);
-//   console.log("Done")
-//   return res;
-// }
+  const res = await model.call(formattedPrompt);
+  console.log("Done")
+  return res;
+}
 
 /**
  * Store user data in the database.
@@ -105,7 +107,7 @@ const getUserData = async function (clientId) {
  * @param {object} model - The language model to use for extraction.
  * @return {Promise<string>} - A Promise that resolves to the extracted keywords.
  */
-const handleUserQuery = async function(clientId, userId, queryContent, newPreference, keywords_list, model) {
+const handleUserQuery = async function (clientId, userId, queryContent, newPreference, keywords_list, model) {
   const clientData = await getUserData(clientId);
 
   let userPreference;
@@ -132,7 +134,7 @@ const handleUserQuery = async function(clientId, userId, queryContent, newPrefer
 
 module.exports = {
   extractKeywords,
-  // extractKeywords_text,
+  extractKeywords_text,
   storeUserData,
   getUserData,
   handleUserQuery,
