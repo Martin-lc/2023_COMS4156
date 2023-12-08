@@ -29,13 +29,12 @@ async function atomChat(text) {
  * @param {string|null} [targetLanguage=null] - Optional. The ISO language code to translate the content into. If not provided or null, the content remains in the original language.
  * @return {Promise<string>} The summarized and possibly translated version of the input text.
  */
-async function summarizeText(text, maxLength = null, targetLanguage = null) {
+async function summarizeText(text, maxLength = null) {
   if (!text) {
     throw new Error('Input text cannot be empty.');
   }
 
   const lengthConstraint = maxLength ? ` Please ensure the summary does not exceed ${maxLength} characters.` : '';
-  const translationInstruction = targetLanguage ? ` Then, translate the summary to ${targetLanguage}.` : '';
 
   const humanTemplate = '{input}';
   const template = `
@@ -44,7 +43,7 @@ async function summarizeText(text, maxLength = null, targetLanguage = null) {
         --------
         {input}
         --------
-        Provide a concise summary of the abstract.${lengthConstraint}${translationInstruction}`;
+        Provide a concise summary of the abstract.${lengthConstraint}$`;
   const chatPrompt = ChatPromptTemplate.fromMessages([
     ['system', template],
     ['human', humanTemplate],
@@ -62,7 +61,7 @@ async function summarizeText(text, maxLength = null, targetLanguage = null) {
  * @return {Promise<Array<Object>>} An array of objects where each object contains
  * the ID, source (always 'pubmed'), and summarized content of each article.
  */
-async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguage = null) {
+async function summarizePubmedOutput(pubmedData, maxLength = null) {
   const summarizedResults = [];
   console.log('summarizing pubmed data...');
 
@@ -78,13 +77,12 @@ async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguag
       throw new Error(`Invalid text in PubMed data at index ${i}`);
     }
     const concatenatedText = pubmedData[i].join(' ');
-    const summary = await summarizeText(concatenatedText, maxLength, targetLanguage);
-    const summary_trimmed = summary.replace(/\n+/g, ' ').trim();
+    const summary = await summarizeText(concatenatedText, maxLength);
 
     summarizedResults.push({
       id: 0,
       source: 'pubmed',
-      content: summary_trimmed,
+      content: summary,
     });
   }
   console.log('Done');
@@ -97,7 +95,7 @@ async function summarizePubmedOutput(pubmedData, maxLength = null, targetLanguag
  * @return {Promise<Array<Object>>} An array of objects where each object contains
  * the title, source (always 'wikipedia'), and summarized content of each article.
  */
-async function summarizeWikipediaOutput(wikipediaData, maxLength = null, targetLanguage = null) {
+async function summarizeWikipediaOutput(wikipediaData, maxLength = null) {
 
   if (!Array.isArray(wikipediaData)) {
     // If not an array, throw a custom error
@@ -108,13 +106,12 @@ async function summarizeWikipediaOutput(wikipediaData, maxLength = null, targetL
   console.log('summarizing wiki data...');
 
   for (const entry of wikipediaData) {
-    const summary = await summarizeText(entry.content, maxLength, targetLanguage);
-    const summary_trimmed = summary.replace(/\n+/g, ' ').trim();
+    const summary = await summarizeText(entry.content, maxLength);
 
     summarizedResults.push({
       title: entry.title,
       source: 'wikipedia',
-      content: summary_trimmed,
+      content: summary,
     });
   }
   console.log('Done');
