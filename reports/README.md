@@ -11,5 +11,5 @@ the coverage folder contains reports for branch coverage tests ouputed by jest, 
 the ESLint folder contains reports for both style checking and static analysis bug finding for all javascript files outputed by ESLint, to generate the report, run
 
 ```
-npx eslint .js c/.js t/*.js --format html --output-file reports/ESLint/eslint-report.html
+npx eslint *.js c*/*.js test/*.js --format html --output-file reports/ESLint/eslint-report.html
 ```

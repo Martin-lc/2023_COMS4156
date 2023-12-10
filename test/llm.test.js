@@ -48,7 +48,7 @@ describe('LLM Module Tests', () => {
     it('should handle valid input with maxLength', async () => {
       // Set up a mock maxLength value
       const mockMaxLength = 100;
-  
+
       // Mocked response for testing maxLength handling
       jest.mock('../content_optimizer/llm', () => {
         return {
@@ -61,9 +61,9 @@ describe('LLM Module Tests', () => {
           }),
         };
       });
-  
+
       const result = await summarizeText('Sample text', mockMaxLength);
-  
+
       // Check if the result includes the maxLength constraint
       expect(result).toContain(`within ${mockMaxLength} characters`);
     });
@@ -79,7 +79,7 @@ describe('LLM Module Tests', () => {
       const validPubmedData = [['Article 1 content.'], ['Article 2 content.']];
       const result = await summarizePubmedOutput(validPubmedData);
       expect(result.length).toBe(validPubmedData.length);
-      result.forEach((res, index) => {
+      result.forEach((res) => {
         expect(res).toHaveProperty('id');
         expect(res).toHaveProperty('source', 'pubmed');
         expect(res).toHaveProperty('content.call', 'Mocked OpenAI response');
@@ -89,7 +89,7 @@ describe('LLM Module Tests', () => {
     it("should throw an error for non-string or untrimmable text in pubmedData", async () => {
       // Example of invalid data: non-string and empty string
       const invalidPubmedData = [[123, ' '], ['Valid content']];
-  
+
       // Expect an error to be thrown for the first invalid element (index 0)
       await expect(summarizePubmedOutput(invalidPubmedData))
         .rejects
@@ -120,7 +120,7 @@ describe("summarizeWikipediaOutput", () => {
     });
 
     const result = await summarizeWikipediaOutput(validWikipediaData);
-    
+
     // Check if the length of the result matches the input data length
     expect(result.length).toBe(validWikipediaData.length);
 
